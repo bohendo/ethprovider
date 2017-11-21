@@ -16,5 +16,5 @@ privateip=`ifconfig eth1 | grep 'inet addr' | awk '{print $2;exit}' | sed 's/add
 echo "========== `date`" >> $log
 
 # Start geth w rpc enabled
-geth --cache=4096 --identity=bonet --rpc --rpcaddr=$privateip --rpcport=3993 --ipcpath=$ipc 2>> $log &
+geth --cache=1024 --identity=bonet --rpc --rpcaddr=$privateip --rpcport=3993 --ipcpath=$ipc 2>> $log &
 
