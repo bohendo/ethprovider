@@ -1,7 +1,7 @@
 #!/bin/bash
 
 log=$HOME/tgeth.log
-ipc=$HOME/geth.ipc
+ipc=$HOME/tgeth.ipc
 
 # Setup a convenient error handler
 function err { >&2 echo "Error: $1"; exit 1; }
@@ -16,5 +16,8 @@ publicip=`ifconfig eth0 | grep 'inet addr' | awk '{print $2;exit}' | sed 's/addr
 echo "========== `date`" >> $log
 
 # Start tgeth w rpc enabled
-tgeth --cache=512--rpc --rpcaddr=$publicip --rpcport=8545 --rpccorsdomain="*" --ipcpath=$ipc 2>> $log &
+tgeth --cache=512 --ipcpath=$ipc                               \
+  --ws --wsaddr=$publicip --wsport=8546 --wsorigins="*"        \
+  --rpc --rpcaddr=$publicip --rpcport=8545 --rpccorsdomain="*" \
+  2>> $log &
 
