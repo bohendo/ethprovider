@@ -2,6 +2,7 @@
 
 log=$HOME/geth.log
 ipc=$HOME/geth.ipc
+dir=$HOME/.ethereum
 
 # Setup a convenient error handler
 function err { >&2 echo "Error: $1"; exit 1; }
@@ -16,5 +17,11 @@ privateip=`ifconfig eth1 | grep 'inet addr' | awk '{print $2;exit}' | sed 's/add
 echo "========== `date`" >> $log
 
 # Start geth w rpc enabled
-geth --cache=1024 --identity=bonet --rpc --rpcaddr=$privateip --rpcport=3993 --ipcpath=$ipc 2>> $log &
+geth \
+  --cache=1024 \
+  --port=30303 \
+  --identity=bonet \
+  --datadir="$dir" \
+  --ipcpath="$ipc" \
+  2>> "$log" &
 
