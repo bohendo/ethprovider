@@ -11,6 +11,7 @@ function err { >&2 echo "Error: $1"; exit 1; }
 [[ -e "$ipc" ]] && err "geth is already running"
 
 # Get our internal ip address
+publicip=`ifconfig eth0 | grep 'inet addr' | awk '{print $2;exit}' | sed 's/addr://'`
 privateip=`ifconfig eth1 | grep 'inet addr' | awk '{print $2;exit}' | sed 's/addr://'`
 
 # Add a division & timestamp in our geth log
@@ -23,5 +24,10 @@ geth \
   --identity=bonet \
   --datadir="$dir" \
   --ipcpath="$ipc" \
+  --ws \
+  --wsaddr=$publicip \
+  --wsport=25727 \
+  --wsapi="eth,web3" \
+  --wsorigins="*" \
   2>> "$log" &
 
