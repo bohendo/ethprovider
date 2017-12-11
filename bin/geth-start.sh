@@ -19,7 +19,6 @@ echo "========== `date`" >> $log
 
 # Start geth w rpc enabled
 geth \
-  --cache=1024 \
   --port=30303 \
   --identity=bonet \
   --datadir="$dir" \

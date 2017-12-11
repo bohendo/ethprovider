@@ -43,10 +43,6 @@ geth \
   --wsport=8546 \
   --wsorigins="*" \
   --wsapi="eth,net,web3,personal" \
-  --rpc \
-  --rpcaddr="$publicip" \
-  --rpcport=8545 \
-  --rpccorsdomain="*" \
   2>> "$log" &
 
 
