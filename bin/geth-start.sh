@@ -26,7 +26,7 @@ geth \
   --ws \
   --wsaddr=$publicip \
   --wsport=25727 \
-  --wsapi="eth,web3" \
+  --wsapi="eth,web3,personal" \
   --wsorigins="*" \
   2>> "$log" &
 
