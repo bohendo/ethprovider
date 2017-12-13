@@ -4,12 +4,10 @@
 function err { >&2 echo "Error: $1"; exit 1; }
 
 # Sanity check: were we given a hostname?
-if [[ ! $1 || $2 ]]
-then
-  err "Provide droplet's hostname as the first arg"
-else
-  hostname=$1
-fi
+[[ -n "$1" && -z "$2" ]] || err "Provide droplet's hostname as the first arg"
+
+hostname=$1
+me=`whoami`
 
 # Prepare to set or use our user's password
 echo "Enter sudo password for REMOTE machine's user (no echo)"
@@ -17,14 +15,9 @@ echo -n "> "
 read -s password
 echo
 
-me=`whoami`
-
 # If we can login as root then setup a sudo user & turn off root login
 if ssh -q root@$hostname exit 2> /dev/null
 then
-
-  echo "Initializing new sudo user"
-
   ssh root@$hostname "bash -s" <<-EOF
 	set -e
 	
@@ -50,15 +43,6 @@ then
 	EOF
 
 fi
-
-# Sanity check: Can't login as root? Well then we can't initialize
-if ! ssh -q $hostname exit 2> /dev/null
-then
-  err "Can't connect to $hostname"
-fi
-
-####################
-# main heredoc
 
 ssh $hostname "sudo -S bash -s" <<EOF
 $password
@@ -94,6 +78,20 @@ docker swarm init "--advertise-addr=\$privateip"
 DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade
 apt-get autoremove -y
 
-reboot
+# Setup Swap
+if [[ ! -f /swp ]]
+then
+  fallocate -l 2G /swp && chmod 600 /swp && mkswap /swp
+fi
 
+if [[ -z "\`grep swap /etc/fstab\`" ]]
+then
+  echo '/swp none swap sw 0 0' >> /etc/fstab
+fi
+
+# Swap is slow, don't use it unless absolutely necessary
+sed -i '/vm.swappiness/d' /etc/sysctl.conf
+echo 'vm.swappiness=10' >> /etc/sysctl.conf
+
+reboot
 EOF
