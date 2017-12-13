@@ -2,30 +2,28 @@
 
 function err { >&2 echo "Error: $1"; exit 1; }
 
-# We expect the name of a volume as the first & only arg
-if [[ -z $1 || -n $2 ]]
-then
-  err "Provide the name of a volume as the first & only argument"
-fi
-
-vol="$1"
+vol="vol-tor1"
 dev="/dev/disk/by-id/scsi-0DO_Volume_$vol"
 part="$dev"-part1
 
-if [[ -d "/mnt/$vol" ]]
+if [[ ! -e "$dev" ]]
 then
-  err "Volume $vol is already initialized"
+  err "Volume $vol isn't available to this machine, use the DigitalOcean admin panel to attach it"
 fi
 
-sudo parted $dev mklabel gpt
-sudo parted -a opt $dev mkpart primary ext4 0% 100%
-sudo mkfs.ext4 $part
-sudo mkdir -p /mnt/$vol
+if [[ -d "/mnt/$vol/lost+found" ]]
+then
+  err "Volume $vol is already mounted & ready to go"
+fi
+
+sudo mkdir /mnt/$vol
 echo "$part /mnt/$vol ext4 defaults,nofail,discard 0 2" | sudo tee -a /etc/fstab
 sudo mount -a
 
-sudo mkdir -p /mnt/$vol/ethereum
-sudo chown -R `whoami`:`whoami` /mnt/$vol/ethereum
+sudo mv -f /var/lib/docker/volumes /mnt/$vol/old-volumes
 
-ln -Tfs /mnt/$vol/ethereum $HOME/.ethereum
+sudo ln -s /mnt/$vol/volumes /var/lib/docker/volumes
+
+# Print results, did everything turn out alright?
+docker volume ls
 
