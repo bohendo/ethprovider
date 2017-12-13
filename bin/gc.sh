@@ -1,4 +1,4 @@
 #!/bin/bash
 
-geth --preload="$HOME/js/index.js" attach geth.ipc
+docker exec -it `docker container ls -f name=fullnode -q` sh -c "geth attach /root/geth.ipc"
 
