@@ -3,7 +3,7 @@
 
 VPATH=build
 
-v=latest
+v=$(shell grep "\"version\"" ./package.json | egrep -o [0-9.]*)
 
 js=$(shell find ./js -type f -name "*.js")
 
