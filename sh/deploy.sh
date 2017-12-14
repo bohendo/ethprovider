@@ -29,7 +29,7 @@ make deploy
 
 cat docker-compose.yml | ssh $target "cat - > ~/docker-compose-fullnode.yml"
 
-ssh $target docker pull bohendo/geth:latest
+ssh $target docker pull `whoami`/geth:latest
 
 ssh $target 'bash -s' <<EOF
 docker stack deploy -c docker-compose-fullnode.yml fullnode
