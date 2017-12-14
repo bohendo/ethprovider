@@ -9,17 +9,16 @@ secrets:
 
 services:
 
-  geth:
-    image: geth:latest
+  server:
+    image: ethnode_server:latest
     deploy:
       mode: global
       restart_policy:
         condition: any
     volumes:
-      - chaindata:/root/.ethereum/geth 
+      - chaindata:${HOME}/.ethereum/geth
       - type: bind
         source: /tmp/ipc
         target: /tmp/ipc
     secrets:
       - eth_keyfile
-

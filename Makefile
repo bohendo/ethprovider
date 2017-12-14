@@ -12,16 +12,20 @@ webpack=./node_modules/.bin/webpack
 ##### RULES #####
 # first rule is the default
 
-all: geth
+all: server client
 	@true
 
-deploy: geth
-	docker build -f geth.Dockerfile -t `whoami`/geth:$v -t geth:$v .
-	docker push `whoami`/geth:$v
+deploy: server client
+	docker build -f server.Dockerfile -t `whoami`/ethnode_server:$v -t ethnode_server:$v .
+	docker push `whoami`/ethnode_server:$v
 
-geth: geth.Dockerfile ck.bundle.js
-	docker build -f geth.Dockerfile -t `whoami`/geth:latest -t geth:latest .
-	mkdir -p build && touch build/geth
+server: server.Dockerfile
+	docker build -f server.Dockerfile -t `whoami`/ethnode_server:latest -t ethnode_server:latest .
+	mkdir -p build && touch build/server
+
+client: client.Dockerfile ck.bundle.js
+	docker build -f client.Dockerfile -t `whoami`/ethnode_client:latest -t ethnode_client:latest .
+	mkdir -p build && touch build/client
 
 build/ck.bundle.js: node_modules webpack.config.js $(js)
 	$(webpack) --config webpack.config.js

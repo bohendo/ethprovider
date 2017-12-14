@@ -10,8 +10,8 @@ if [ -z "$target" ]
 then
   touch js/* && make deploy
   mkdir -p /tmp/ipc
-  cat docker-compose.yml | sed 's/image: geth:latest/image: '`whoami`'\/geth:'"$v"'/' > /tmp/docker-compose-fullnode.yml
-  docker stack deploy -c /tmp/docker-compose-fullnode.yml fullnode
+  cat docker-compose.yml | sed 's/image: geth:latest/image: '`whoami`'\/geth:'"$v"'/' > /tmp/docker-compose-ethnode.yml
+  docker stack deploy -c /tmp/docker-compose-ethnode.yml ethnode
   exit 0
 fi
 
@@ -33,11 +33,11 @@ ssh $target mkdir -p /tmp/ipc
 
 cat docker-compose.yml |\
   sed 's/image: geth:latest/image: '`whoami`'\/geth:'"$v"'/' |\
-  ssh $target "cat - > ~/docker-compose-fullnode.yml"
+  ssh $target "cat - > ~/docker-compose-ethnode.yml"
 
 ssh $target docker pull `whoami`/geth:$v
 
 ssh $target 'bash -s' <<EOF
-docker stack deploy -c docker-compose-fullnode.yml fullnode
+docker stack deploy -c docker-compose-ethnode.yml ethnode
 EOF
 
