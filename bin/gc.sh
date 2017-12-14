@@ -1,4 +1,11 @@
 #!/bin/bash
 
-docker exec -it `docker container ls -f name=fullnode -q` sh -c "geth attach /root/geth.ipc"
+gethid=`docker container ls -f name=fullnode -q`
+
+if [[ -n "$gethid" ]]
+then
+  docker exec -it $gethid sh -c "geth attach --preload=/root/geth.bundle.js /root/geth.ipc"
+else
+  echo "Geth isn't running.."
+fi
 
