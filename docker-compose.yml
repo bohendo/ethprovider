@@ -16,7 +16,7 @@ services:
       restart_policy:
         condition: any
     volumes:
-      - chaindata:${HOME}/.ethereum/geth
+      - chaindata:/root/.ethereum/geth
       - type: bind
         source: /tmp/ipc
         target: /tmp/ipc
