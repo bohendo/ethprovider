@@ -23,6 +23,9 @@ geth: geth.Dockerfile ck.bundle.js
 	docker build -f geth.Dockerfile -t `whoami`/geth:latest -t geth:latest .
 	mkdir -p build && touch build/geth
 
-build/ck.bundle.js: $(js) webpack.config.js
+build/ck.bundle.js: node_modules webpack.config.js $(js)
 	$(webpack) --config webpack.config.js
+
+node_modules: package.json
+	npm install
 
