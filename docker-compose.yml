@@ -10,7 +10,7 @@ secrets:
 services:
 
   geth:
-    image: bohendo/geth:latest
+    image: geth:latest
     deploy:
       mode: global
       restart_policy:

@@ -4,16 +4,15 @@ const webpack = require('webpack')
 
 module.exports = {
 
-  target: 'node',
-  stats: { warnings: false },
+  externals: ['eth'],
 
-  entry: {
-    geth: './js/index.js',
-  },
+  entry: './js/cryptokitties.js',
 
   output: {
     path: path.join(__dirname, 'build'),
-    filename: '[name].bundle.js',
+    filename: 'ck.bundle.js',
+    library: 'ck',
+    libraryTarget: 'assign',
   },
 
   resolve: {
@@ -24,9 +23,11 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        use: ['babel-loader'],
-        exclude: /node_modules/,
-      }
+        use: {
+          loader: 'babel-loader',
+          options: { presets: ['es2015'], },
+        },
+      },
     ],
   },
 

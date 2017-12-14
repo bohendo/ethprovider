@@ -1,5 +1,6 @@
-var coreAddress = "0x06012c8cf97BEaD5deAe237070F9587f8E7A266d"
-var coreABI = [
+export default {
+  address: "0x06012c8cf97BEaD5deAe237070F9587f8E7A266d",
+  abi: [
   {
     "constant": false,
     "inputs": [
@@ -325,4 +326,4 @@ var coreABI = [
     "name": "Birth",
     "type": "event"
   }
-]
+]}

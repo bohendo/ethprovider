@@ -1,5 +1,6 @@
-var sireAddress = "0xC7af99Fe5513eB6710e6D5f44F9989dA40F27F26"
-var sireABI = [
+export default {
+  address: "0xC7af99Fe5513eB6710e6D5f44F9989dA40F27F26",
+  abi: [
   {
     "constant": false,
     "inputs": [
@@ -140,4 +141,4 @@ var sireABI = [
     "name": "AuctionCancelled",
     "type": "event"
   }
-]
+]}

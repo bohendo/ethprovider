@@ -1,5 +1,6 @@
-var saleAddress = "0xb1690C08E213a35Ed9bAb7B318DE14420FB57d8C"
-var saleABI = [
+export default {
+  address: "0xb1690C08E213a35Ed9bAb7B318DE14420FB57d8C",
+  abi: [
   {
     "constant": false,
     "inputs": [
@@ -164,4 +165,4 @@ var saleABI = [
     "name": "AuctionCancelled",
     "type": "event"
   }
-]
+]}
