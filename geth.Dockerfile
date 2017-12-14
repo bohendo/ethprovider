@@ -11,5 +11,5 @@ WORKDIR /root
 
 ENTRYPOINT ["/usr/local/bin/geth"]
 
-CMD [ "--identity=bonet", "--datadir=/root/.ethereum", "--ipcpath=/root/geth.ipc", "--keystore=/run/secrets" ]
+CMD [ "--identity=bonet", "--datadir=/root/.ethereum", "--ipcpath=/tmp/ipc/geth.ipc", "--keystore=/run/secrets" ]
 

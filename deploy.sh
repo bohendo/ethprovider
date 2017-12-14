@@ -9,6 +9,7 @@ v=$(grep "\"version\"" ./package.json | egrep -o [0-9.]*)
 if [ -z "$target" ]
 then
   touch js/* && make deploy
+  mkdir -p /tmp/ipc
   cat docker-compose.yml | sed 's/image: geth:latest/image: '`whoami`'\/geth:'"$v"'/' > /tmp/docker-compose-fullnode.yml
   docker stack deploy -c /tmp/docker-compose-fullnode.yml fullnode
   exit 0
@@ -28,6 +29,7 @@ fi
 
 # Make sure project gets rebuilt as the production version
 touch js/* && make deploy
+ssh $target mkdir -p /tmp/ipc
 
 cat docker-compose.yml |\
   sed 's/image: geth:latest/image: '`whoami`'\/geth:'"$v"'/' |\

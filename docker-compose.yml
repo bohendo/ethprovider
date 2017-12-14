@@ -17,6 +17,9 @@ services:
         condition: any
     volumes:
       - chaindata:/root/.ethereum/geth 
+      - type: bind
+        source: /tmp/ipc
+        target: /tmp/ipc
     secrets:
       - eth_keyfile
 
