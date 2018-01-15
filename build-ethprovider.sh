@@ -1,20 +1,21 @@
 
-cat - > /tmp/ethprovider.Dockerfile <<EOF
-FROM ethereum/client-go:stable as base
+cat - > /tmp/ethprovider/Dockerfile <<EOF
+FROM ubuntu:16.04
 
-FROM alpine:latest
-RUN apk add --no-cache ca-certificates
-COPY --from=base /usr/local/bin/geth /usr/local/bin
+RUN apt-get update -y && apt-get install -y bash sudo curl
 
-WORKDIR /root
+RUN curl https://get.parity.io -Lk > /tmp/get-parity.sh && bash /tmp/get-parity.sh
 
-ENTRYPOINT ["/usr/local/bin/geth"]
-CMD [ "--identity=bonet", "--datadir=/root/.ethereum", "--ipcpath=/tmp/ipc/geth.ipc", "--keystore=/run/secrets", "--cache=1024" ]
+ENTRYPOINT ["/usr/bin/parity"]
+
+CMD [ "--identity=bohendo", "--base-path=/root/eth", "--ipc-path=/tmp/ipc/eth.ipc", "--auto-update=all", "--no-serve-light" ]
 EOF
 
-docker build -f /tmp/ethprovider.Dockerfile -t `whoami`/ethprovider:latest -t ethprovider:latest .
+mkdir -p /tmp/ethprovider
+
+docker build -f /tmp/ethprovider/Dockerfile -t `whoami`/ethprovider:latest -t ethprovider:latest /tmp/ethprovider
 
 docker push `whoami`/ethprovider:latest
 
-rm /tmp/ethprovider.Dockerfile
+rm /tmp/ethprovider/Dockerfile
 
