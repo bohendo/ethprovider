@@ -78,20 +78,5 @@ docker swarm init "--advertise-addr=\$privateip"
 DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade
 apt-get autoremove -y
 
-# Setup Swap
-if [[ ! -f /swp ]]
-then
-  fallocate -l 2G /swp && chmod 600 /swp && mkswap /swp
-fi
-
-if [[ -z "\`grep swap /etc/fstab\`" ]]
-then
-  echo '/swp none swap sw 0 0' >> /etc/fstab
-fi
-
-# Swap is slow, don't use it unless absolutely necessary
-sed -i '/vm.swappiness/d' /etc/sysctl.conf
-echo 'vm.swappiness=10' >> /etc/sysctl.conf
-
 reboot
 EOF
