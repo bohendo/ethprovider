@@ -1,5 +1,6 @@
 
 v=latest # tweak to deploy a specific version number
+me=`whoami` # your docker.io username
 
 mkdir -p /tmp/ethprovider
 
@@ -13,7 +14,7 @@ RUN curl https://get.parity.io -Lk > /tmp/get-parity.sh && bash /tmp/get-parity.
 ENTRYPOINT ["/usr/bin/parity"]
 
 CMD [ \
-  "--identity=bohendo", \
+  "--identity=$me", \
   "--base-path=/root/eth", \
   "--ipc-path=/tmp/ipc/eth.ipc", \
   "--auto-update=all", \
@@ -21,9 +22,9 @@ CMD [ \
 ]
 EOF
 
-docker build -f /tmp/ethprovider/Dockerfile -t `whoami`/ethprovider:$v -t ethprovider:$v /tmp/ethprovider
+docker build -f /tmp/ethprovider/Dockerfile -t $me/ethprovider:$v -t ethprovider:$v /tmp/ethprovider
 
-docker push `whoami`/ethprovider:$v
+docker push $me/ethprovider:$v
 
 rm /tmp/ethprovider/Dockerfile
 
