@@ -1,4 +1,8 @@
 
+v=latest # tweak to deploy a specific version number
+
+mkdir -p /tmp/ethprovider
+
 cat - > /tmp/ethprovider/Dockerfile <<EOF
 FROM ubuntu:16.04
 
@@ -8,14 +12,18 @@ RUN curl https://get.parity.io -Lk > /tmp/get-parity.sh && bash /tmp/get-parity.
 
 ENTRYPOINT ["/usr/bin/parity"]
 
-CMD [ "--identity=bohendo", "--base-path=/root/eth", "--ipc-path=/tmp/ipc/eth.ipc", "--auto-update=all", "--no-serve-light" ]
+CMD [ \
+  "--identity=bohendo", \
+  "--base-path=/root/eth", \
+  "--ipc-path=/tmp/ipc/eth.ipc", \
+  "--auto-update=all", \
+  "--cache-size=8192" \
+]
 EOF
 
-mkdir -p /tmp/ethprovider
+docker build -f /tmp/ethprovider/Dockerfile -t `whoami`/ethprovider:$v -t ethprovider:$v /tmp/ethprovider
 
-docker build -f /tmp/ethprovider/Dockerfile -t `whoami`/ethprovider:latest -t ethprovider:latest /tmp/ethprovider
-
-docker push `whoami`/ethprovider:latest
+docker push `whoami`/ethprovider:$v
 
 rm /tmp/ethprovider/Dockerfile
 
