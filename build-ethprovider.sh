@@ -18,7 +18,8 @@ CMD [ \
   "--base-path=/root/eth", \
   "--ipc-path=/tmp/ipc/eth.ipc", \
   "--auto-update=all", \
-  "--cache-size=8192" \
+  "--cache-size=8192", \
+  "--no-warp" \
 ]
 EOF
 
