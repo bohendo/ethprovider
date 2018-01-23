@@ -1,4 +1,3 @@
-
 v=latest # tweak to deploy a specific version number
 me=`whoami` # your docker.io username
 
@@ -12,7 +11,6 @@ RUN apt-get update -y && apt-get install -y bash sudo curl
 RUN curl https://get.parity.io -Lk > /tmp/get-parity.sh && bash /tmp/get-parity.sh
 
 ENTRYPOINT ["/usr/bin/parity"]
-
 CMD [ \
   "--identity=$me", \
   "--base-path=/root/eth", \
