@@ -12,12 +12,15 @@ RUN curl https://get.parity.io -Lk > /tmp/get-parity.sh && bash /tmp/get-parity.
 
 ENTRYPOINT ["/usr/bin/parity"]
 CMD [ \
-  "--identity=$me", \
   "--base-path=/root/eth", \
-  "--ipc-path=/tmp/ipc/eth.ipc", \
   "--auto-update=all", \
   "--cache-size=8192", \
-  "--no-warp" \
+  "--no-ui", \
+  "--no-jsonrpc", \
+  "--no-ws", \
+  "--ipc-path=/tmp/ipc/eth.ipc", \
+  "--ipc-api=safe,personal", \
+  "--identity=$me" \
 ]
 EOF
 
