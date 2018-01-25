@@ -19,7 +19,7 @@ CMD [ \
   "--no-jsonrpc", \
   "--no-ws", \
   "--ipc-path=/tmp/ipc/eth.ipc", \
-  "--ipc-api=safe,personal", \
+  "--ipc-apis=safe,personal", \
   "--identity=$me" \
 ]
 EOF
