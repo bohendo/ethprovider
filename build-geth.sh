@@ -3,14 +3,14 @@ v=latest # tweak to deploy a specific version number
 
 me=`whoami` # your docker.io username
 
-mkdir -p /tmp/ethprovider
+mkdir -p /tmp/geth
 
-cat - > /tmp/ethprovider/Dockerfile <<EOF
-FROM ethereum/client-go:stable as base
-
+cat - > /tmp/geth/Dockerfile <<EOF
+FROM ethereum/client-go:latest as base
 FROM alpine:latest
-RUN apk add --no-cache ca-certificates
 COPY --from=base /usr/local/bin/geth /usr/local/bin
+
+RUN apk add --no-cache ca-certificates
 
 WORKDIR /root
 
@@ -23,9 +23,9 @@ CMD [ \
 ]
 EOF
 
-docker build -f /tmp/ethprovider/Dockerfile -t $me/ethprovider:$v -t ethprovider:$v /tmp/ethprovider
+docker build -f /tmp/geth/Dockerfile -t $me/geth:$v -t geth:$v /tmp/geth
 
-docker push $me/ethprovider:$v
+docker push $me/geth:$v
 
-rm /tmp/ethprovider/Dockerfile
+rm /tmp/geth/Dockerfile
 

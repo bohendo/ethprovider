@@ -1,9 +1,9 @@
 v=latest # tweak to deploy a specific version number
 me=`whoami` # your docker.io username
 
-mkdir -p /tmp/ethprovider
+mkdir -p /tmp/parity
 
-cat - > /tmp/ethprovider/Dockerfile <<EOF
+cat - > /tmp/parity/Dockerfile <<EOF
 FROM ubuntu:16.04
 
 RUN apt-get update -y && apt-get install -y bash sudo curl
@@ -24,9 +24,9 @@ CMD [ \
 ]
 EOF
 
-docker build -f /tmp/ethprovider/Dockerfile -t $me/ethprovider:$v -t ethprovider:$v /tmp/ethprovider
+docker build -f /tmp/parity/Dockerfile -t $me/parity:$v -t parity:$v /tmp/parity
 
-docker push $me/ethprovider:$v
+docker push $me/parity:$v
 
-rm /tmp/ethprovider/Dockerfile
+rm /tmp/parity/Dockerfile
 
