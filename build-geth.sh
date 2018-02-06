@@ -6,20 +6,20 @@ me=`whoami` # your docker.io username
 mkdir -p /tmp/geth
 
 cat - > /tmp/geth/Dockerfile <<EOF
-FROM ethereum/client-go:latest as base
+FROM ethereum/client-go:stable as base
 FROM alpine:latest
 COPY --from=base /usr/local/bin/geth /usr/local/bin
 
 RUN apk add --no-cache ca-certificates
 
-WORKDIR /root
+RUN mkdir /root/eth && mkdir /tmp/ipc
 
 ENTRYPOINT ["/usr/local/bin/geth"]
-CMD [ \
+CMD [\
   "--datadir=/root/eth", \
-  "--cache=8192" \
-  "--ipcpath=/tmp/ipc/eth.ipc", \
-  "--identity=$me", \
+  "--cache=8192", \
+  "--ipcpath=/tmp/ipc/geth.ipc", \
+  "--identity=$me"  \
 ]
 EOF
 

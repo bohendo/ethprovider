@@ -11,16 +11,16 @@ RUN apt-get update -y && apt-get install -y bash sudo curl
 RUN curl https://get.parity.io -Lk > /tmp/get-parity.sh && bash /tmp/get-parity.sh
 
 ENTRYPOINT ["/usr/bin/parity"]
-CMD [ \
+CMD [\
   "--base-path=/root/eth", \
   "--auto-update=all", \
   "--cache-size=8192", \
   "--no-ui", \
   "--no-jsonrpc", \
   "--no-ws", \
-  "--ipc-path=/tmp/ipc/eth.ipc", \
+  "--ipc-path=/tmp/ipc/parity.ipc", \
   "--ipc-apis=safe,personal", \
-  "--identity=$me" \
+  "--identity=$me"  \
 ]
 EOF
 

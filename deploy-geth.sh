@@ -1,15 +1,13 @@
 #!/bin/bash
 
-model=geth
-
-image="`whoami`/$model:latest"
+image="`whoami`/geth:latest"
 
 docker pull $image
 
 docker service create \
-  --name "ethprovider" \
+  --name "ethprovider_geth" \
   --mode "global" \
-  --mount "type=volume,source=""$model""_data,destination=/root/eth" \
+  --mount "type=volume,source=geth_data,destination=/root/eth" \
   --mount "type=volume,source=ethprovider_ipc,destination=/tmp/ipc" \
   --detach \
   $image
