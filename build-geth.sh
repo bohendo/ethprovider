@@ -6,7 +6,7 @@ me=`whoami` # your docker.io username
 mkdir -p /tmp/geth
 
 cat - > /tmp/geth/Dockerfile <<EOF
-FROM ethereum/client-go:stable as base
+FROM ethereum/client-go:v1.7.3 as base
 FROM alpine:latest
 COPY --from=base /usr/local/bin/geth /usr/local/bin
 
@@ -17,7 +17,7 @@ RUN mkdir /root/eth && mkdir /tmp/ipc
 ENTRYPOINT ["/usr/local/bin/geth"]
 CMD [\
   "--datadir=/root/eth", \
-  "--cache=8192", \
+  "--cache=4096", \
   "--ipcpath=/tmp/ipc/geth.ipc", \
   "--identity=$me"  \
 ]

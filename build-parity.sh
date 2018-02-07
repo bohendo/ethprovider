@@ -14,7 +14,7 @@ ENTRYPOINT ["/usr/bin/parity"]
 CMD [\
   "--base-path=/root/eth", \
   "--auto-update=all", \
-  "--cache-size=8192", \
+  "--cache-size=4096", \
   "--no-ui", \
   "--no-jsonrpc", \
   "--no-ws", \
