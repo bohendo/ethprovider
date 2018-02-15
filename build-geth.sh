@@ -6,7 +6,7 @@ me=`whoami` # your docker.io username
 mkdir -p /tmp/geth
 
 cat - > /tmp/geth/Dockerfile <<EOF
-FROM ethereum/client-go:v1.7.3 as base
+FROM ethereum/client-go:v1.8.0 as base
 FROM alpine:latest
 COPY --from=base /usr/local/bin/geth /usr/local/bin
 
