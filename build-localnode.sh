@@ -4,26 +4,20 @@ me=`whoami` # your docker.io username
 mkdir -p /tmp/localnode
 
 cat - > /tmp/localnode/Dockerfile <<EOF
-FROM ubuntu:16.04
+FROM ethereum/client-go:v1.8.0 as base
+FROM alpine:latest
+COPY --from=base /usr/local/bin/geth /usr/local/bin
 
-RUN apt-get update -y && apt-get install -y bash sudo curl
+RUN apk add --no-cache ca-certificates
 
-RUN curl https://get.parity.io -Lk > /tmp/get-parity.sh && bash /tmp/get-parity.sh
+RUN mkdir /root/eth && mkdir /tmp/ipc
 
-EXPOSE 8545
-
-ENTRYPOINT ["/usr/bin/parity"]
-CMD [ \
-  "--auto-update=all", \
-  "--cache-size=1024", \
-  "--light", \
-  "--no-ui", \
-  "--jsonrpc-interface=local", \
-  "--jsonrpc-apis=safe,personal", \
-  "--no-ws", \
-  "--ipc-path=/tmp/ipc/eth.ipc", \
-  "--ipc-apis=safe,personal", \
-  "--identity=$me" \
+ENTRYPOINT ["/usr/local/bin/geth"]
+CMD [\
+  "--datadir=/root/eth", \
+  "--cache=1024", \
+  "--ipcpath=/tmp/ipc/geth.ipc", \
+  "--identity=$me"  \
 ]
 EOF
 
