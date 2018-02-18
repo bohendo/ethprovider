@@ -1,3 +1,4 @@
+#!/bin/bash
 
 v=latest # tweak to deploy a specific version number
 

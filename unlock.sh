@@ -1,3 +1,4 @@
+#!/bin/bash
 
 # Unlock sudo first
 sudo true

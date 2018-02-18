@@ -1,3 +1,5 @@
+#!/bin/bash
+
 v=latest # tweak to deploy a specific version number
 me=`whoami` # your docker.io username
 
