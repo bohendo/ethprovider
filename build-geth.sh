@@ -21,6 +21,7 @@ CMD [\
   "--cache=4096", \
   "--ipcpath=/tmp/ipc/geth.ipc", \
   "--identity=$me"  \
+  "--lightserv=50" \
 ]
 EOF
 
