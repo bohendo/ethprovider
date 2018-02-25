@@ -7,7 +7,7 @@ me=`whoami` # your docker.io username
 mkdir -p /tmp/geth
 
 cat - > /tmp/geth/Dockerfile <<EOF
-FROM ethereum/client-go:v1.8.0 as base
+FROM ethereum/client-go:v1.8.1 as base
 FROM alpine:latest
 COPY --from=base /usr/local/bin/geth /usr/local/bin
 
@@ -20,8 +20,8 @@ CMD [\
   "--datadir=/root/eth", \
   "--cache=4096", \
   "--ipcpath=/tmp/ipc/geth.ipc", \
-  "--identity=$me"  \
-  "--lightserv=50" \
+  "--lightserv=50", \
+  "--identity=$me" \
 ]
 EOF
 
