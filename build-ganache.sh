@@ -11,11 +11,13 @@ RUN apk --no-cache add git curl
 
 RUN npm install -g ganache-cli@beta
 
+VOLUME /root/ganache
+
 ENTRYPOINT ["ganache-cli"]
 CMD [\
-  "--port=7545", \
+  "--db /root/ganache", \
+  "--port=8545", \
   "--networkId=5777", \
-  "--host=127.0.0.1", \
   "--mnemonic=candy maple cake sugar pudding cream honey rich smooth crumble sweet treat" \
 ]
 EOF

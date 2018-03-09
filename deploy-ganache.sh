@@ -10,7 +10,9 @@ docker pull $image
 docker service create \
   --name "ethprovider_ganache" \
   --mode "global" \
-  --publish "7545:7545" \
+  --network "blog_back" \
+  --publish "8545:8545" \
+  --mount "type=volume,source=ganache_data,target=/root/ganache" \
   --detach \
   $image
 
