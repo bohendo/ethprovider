@@ -1,1 +1,14 @@
-docker run -it -v ethprovider_ipc:/tmp/ipc ethereum/client-go attach /tmp/ipc/geth.ipc
+#!/bin/bash
+
+provider='geth'
+script="`pwd`/$1"
+
+if [[ -f "$script" ]]
+then
+  echo "Bind mounting $script"
+  bind="-v $script:/root/$1"
+  docker run -it -v ethprovider_ipc:/tmp/ipc $bind ethereum/client-go attach /tmp/ipc/$provider.ipc --preload /root/$1
+else
+  docker run -it -v ethprovider_ipc:/tmp/ipc ethereum/client-go attach /tmp/ipc/$provider.ipc
+fi
+
