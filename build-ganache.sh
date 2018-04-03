@@ -15,6 +15,7 @@ VOLUME /root/ganache
 
 ENTRYPOINT ["ganache-cli"]
 CMD [\
+  "--gasLimit=6000000", \
   "--db /root/ganache", \
   "--port=8545", \
   "--networkId=5777", \
