@@ -28,6 +28,8 @@ docker service create \
   --datadir "/root/eth" \
   --cache "4096" \
   --rpc \
+  --rpcaddr "0.0.0.0" \
+  --rpcvhosts "ethprovider_geth" \
   --ipcpath "/tmp/ipc/geth.ipc" \
   --lightserv "50" \
   --identity "$me" \
