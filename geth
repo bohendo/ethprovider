@@ -1,11 +1,12 @@
 #!/bin/bash
 set -e
 
+provider='geth'
+
 script="`pwd`/$1"
 
 v=latest # tweak to deploy a specific version number
 me=`whoami` # your docker.io username
-provider='geth'
 image="$me/ethprovider_$provider:$v"
 
 if [[ -f "$script" ]]
