@@ -1,17 +1,16 @@
 #!/bin/bash
 set -e
 
-v=latest # tweak to deploy a specific version number
 me=`whoami` # your docker.io username
-image="$me/ethprovider_geth:$v"
+image="$me/ethprovider_geth:latest"
 
 mkdir -p /tmp/geth
 cat - > /tmp/geth/Dockerfile <<EOF
-FROM ethereum/client-go:v1.8.4 as base
+FROM ethereum/client-go:v1.8.6 as base
 FROM alpine:latest
 COPY --from=base /usr/local/bin/geth /usr/local/bin
-RUN apk add --no-cache ca-certificates
-RUN mkdir /root/eth && mkdir /tmp/ipc
+RUN apk add --no-cache ca-certificates &&\
+    mkdir /root/eth && mkdir /tmp/ipc
 ENTRYPOINT ["/usr/local/bin/geth"]
 EOF
 
@@ -32,5 +31,5 @@ docker service create \
   --rpcvhosts "ethprovider_geth" \
   --ipcpath "/tmp/ipc/geth.ipc" \
   --lightserv "50" \
-  --identity "$me" \
+  --identity "$me"
 
