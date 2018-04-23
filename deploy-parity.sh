@@ -27,8 +27,11 @@ docker service create \
   --auto-update "all" \
   --cache-size "4096" \
   --no-ui \
-  --no-jsonrpc \
   --no-ws \
+  --jsonrpc-interface "all" \
+  --jsonrpc-apis "safe" \
+  --jsonrpc-hosts "all" \
+  --jsonrpc-cors "all" \
   --ipc-path "/tmp/ipc/parity.ipc" \
   --ipc-apis "safe,personal" \
   --identity "$me"
