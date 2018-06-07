@@ -22,6 +22,6 @@ Each script contains a `docker service create` command at the end which utilizes
 
 Customize the options passed to `docker service create` to your heart's content. Then run the deploy script and you're good to go.
 
-The `geth` script will attach a geth console to some provider. Pass some file.js as it's first & only argument to preload that script into your console.
+The `eth` script will attach a geth console to some provider. Pass some file.js as it's first & only argument to preload that script into your console.
 
-The first line of `geth` specifies the provider (ie 'geth' or 'parity') and looks for an appropriately named ipc socket file created by the associated deploy script.
+The first line of `eth` specifies the provider (ie 'geth' or 'parity') and looks for an appropriately named ipc socket file created by the associated deploy script.
