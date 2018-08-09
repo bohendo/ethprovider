@@ -1,6 +1,6 @@
 #!/bin/bash
 
-url=https://localhost
+url=https://eth.bohendo.com/ws
 
 method=$1 && [[ -n "$method" ]] || method=eth_syncing
 params=$2 && [[ -n "$params" ]] || params='[]'

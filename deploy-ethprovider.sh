@@ -12,8 +12,10 @@ fi
 email="noreply@gmail.com"
 [[ -z "$EMAIL" ]] || email="$EMAIL"
 
+domain="localhost"
+[[ -z "$DOMAINNAME" ]] || domain="$DOMAINNAME"
+
 me=`whoami`
-domain="eth.bohendo.com"
 
 name="eth_provider"
 cache="4096"
@@ -217,6 +219,7 @@ http {
             proxy_http_version 1.1;
             proxy_set_header Upgrade \$http_upgrade;
             proxy_set_header Connection "Upgrade";
+            proxy_set_header Host \$host;
         }
 
         location / {
@@ -260,15 +263,6 @@ volumes:
 
 services:
 
-  provider:
-    image: $provider_image
-    deploy:
-      mode: global
-    volumes:
-      - ${provider}_data:$data_dir
-    ports:
-      - "30303:30303"
-
   proxy:
     image: $proxy_image
     deploy:
@@ -281,6 +275,15 @@ services:
     ports:
       - "80:80"
       - "443:443"
+
+  provider:
+    image: $provider_image
+    deploy:
+      mode: global
+    volumes:
+      - ${provider}_data:$data_dir
+    ports:
+      - "30303:30303"
 EOF
 
 docker stack deploy --compose-file $tmp/docker-compose.yml eth
