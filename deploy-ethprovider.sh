@@ -9,10 +9,13 @@ then provider="geth"
 else provider="parity"
 fi
 
+email="noreply@gmail.com"
+[[ -z "$EMAIL" ]] || email="$EMAIL"
+
 me=`whoami`
 domain="eth.bohendo.com"
-email="noreply@example.com"
 
+name="eth_provider"
 cache="4096"
 http_port="8545"
 ws_port="8546"
@@ -21,14 +24,16 @@ data_dir="/root/eth"
 ########################################
 ## Build Provider
 
+echo;echo "Building Eth Provider";echo
 image="$name_$provider:latest"
 tmp="/tmp/$name"
+
 mkdir -p $tmp
 
 cat - > $tmp/parity.Dockerfile <<EOF
 FROM ubuntu:16.04
 RUN apt-get update -y && apt-get install -y bash sudo curl
-RUN curl https://get.parity.io -Lk > /tmp/get-parity.sh && bash /tmp/get-parity.sh # v2.0.1
+RUN curl https://get.parity.io -Lk > /tmp/get-parity.sh && bash /tmp/get-parity.sh # 2.0.1
 ENTRYPOINT ["/usr/bin/parity"]
 CMD [ \
   "--identity=$me", \
@@ -86,6 +91,8 @@ rm -rf $tmp
 
 ########################################
 ## Build Proxy
+
+echo;echo "Building Eth Proxy";echo
 
 proxy_image="eth_proxy:latest"
 tmp="/tmp/eth_proxy"
@@ -243,7 +250,10 @@ rm -rf $tmp
 ########################################
 ## Deploy
 
+echo;echo "Deploying Eth Provider";echo
+
 tmp=/tmp/ethprovider
+mkdir -p $tmp
 
 cat - > $tmp/docker-compose.yml <<EOF
 version: '3.4'
@@ -251,7 +261,8 @@ version: '3.4'
 volumes:
   letsencrypt:
   devcerts:
-  chaindata:
+  ${provider}_data:
+    external: true
 
 services:
 
@@ -260,7 +271,7 @@ services:
     deploy:
       mode: global
     volumes:
-      - ${provider}_chaindata:$data_dir
+      - ${provider}_data:$data_dir
     ports:
       - "30303:30303"
 
@@ -278,5 +289,4 @@ services:
       - "443:443"
 EOF
 
-docker stack deploy $tmp/docker-compose.yml eth
-rm -rf $tmp
+docker stack deploy --compose-file $tmp/docker-compose.yml eth
