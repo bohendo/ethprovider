@@ -1,0 +1,12 @@
+#!/bin/bash
+
+method=$1
+[[ -n "$method" ]] || method=eth_syncing
+
+params=$2
+[[ -n "$params" ]] || params='[]'
+
+echo $method $params
+
+curl -H "Content-Type: application/json" -X POST --data '{"id":31415,"jsonrpc":"2.0","method":"'$method'","params":'$params'}' https://localhost/ws
+
