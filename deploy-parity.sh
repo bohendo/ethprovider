@@ -21,17 +21,24 @@ docker service create \
   --mode "global" \
   --mount "type=volume,source=parity_data,destination=/root/eth" \
   --mount "type=volume,source=ethprovider_ipc,destination=/tmp/ipc" \
+  --publish "8545:8545" \
+  --publish "8546:8546" \
   --detach \
   $image \
   --base-path "/root/eth" \
   --auto-update "all" \
-  --cache-size "4096" \
+  --cache-size "2048" \
   --no-ui \
-  --no-ws \
+  --jsonrpc-port "8545" \
   --jsonrpc-interface "all" \
   --jsonrpc-apis "safe" \
   --jsonrpc-hosts "all" \
   --jsonrpc-cors "all" \
+  --ws-port "8546" \
+  --ws-interface "all" \
+  --ws-apis "safe" \
+  --ws-origins "all" \
+  --ws-hosts "all" \
   --ipc-path "/tmp/ipc/parity.ipc" \
   --ipc-apis "safe,personal" \
   --identity "$me"
