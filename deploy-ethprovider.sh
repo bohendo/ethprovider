@@ -1,6 +1,7 @@
-#!/bin/bash
+r!/bin/bash
 set -e
 
+########################################
 ## Config
 
 provider="parity"
@@ -10,12 +11,15 @@ provider="parity"
 #fi
 
 me=`whoami`
-name="ethprovider"
+name="eth_provider"
 cache="4096"
 http_port="8545"
 ws_port="8546"
 
-## Build Docker Image
+data_dir="/root/eth"
+
+########################################
+## Build Provider
 
 image="$name_$provider:latest"
 tmp="/tmp/$name"
@@ -26,6 +30,27 @@ FROM ubuntu:16.04
 RUN apt-get update -y && apt-get install -y bash sudo curl
 RUN curl https://get.parity.io -Lk > /tmp/get-parity.sh && bash /tmp/get-parity.sh # v2.0.1
 ENTRYPOINT ["/usr/bin/parity"]
+CMD [ \
+  "--identity=$me", \
+  "--base-path=$data_dir", \
+  "--auto-update=all", \
+  "--cache-size=$cache", \
+  "--no-secretstore", \
+  "--no-hardware-wallets", \
+  "--jsonrpc-port=$http_port", \
+  "--jsonrpc-interface=all", \
+  "--jsonrpc-apis=safe", \
+  "--jsonrpc-hosts=all", \
+  "--jsonrpc-cors=all", \
+  "--ws-port=$ws_port", \
+  "--ws-interface=all", \
+  "--ws-apis=safe", \
+  "--ws-origins=all", \
+  "--ws-hosts=all", \
+  "--no-ipc", \
+  "--whisper", \
+  "--whisper-pool-size=128" \
+]
 EOF
 
 cat - > $tmp/geth.Dockerfile <<EOF
@@ -34,14 +59,38 @@ FROM alpine:latest
 COPY --from=base /usr/local/bin/geth /usr/local/bin
 RUN apk add --no-cache ca-certificates && mkdir /root/eth && mkdir /tmp/ipc
 ENTRYPOINT ["/usr/local/bin/geth"]
+CMD [ \
+  "--identity=$me", \
+  "--datadir=$data_dir", \
+  "--lightserv=50", \
+  "--nousb", \
+  "--cache=$cache", \
+  "--rpc", \
+  "--rpcaddr=0.0.0.0", \
+  "--rpcport=$http_port", \
+  "--rpcapi=safe", \
+  "--rpccorsdomain=*", \
+  "--rpcvhosts=*", \
+  "--ws", \
+  "--wsaddr=0.0.0.0", \
+  "--wsport=$ws_port", \
+  "--wsapi=safe", \
+  "--wsorigins=*", \
+  "--ipcdisable", \
+  "--shh" \
+]
 EOF
 
 docker build -f $tmp/$provider.Dockerfile -t $image $tmp/
 rm -rf $tmp
 
-## Set docker & provider options according to config
+########################################
+## Build Proxy
 
-data_dir="/root/eth"
+bash ./build-proxy.sh
+
+########################################
+## Deploy
 
 docker_options='
     --name='"$name"'
@@ -53,56 +102,7 @@ docker_options='
     --detach
 '
 
-if [[ "$provider" = "parity" ]]
-then
-    provider_options='
-    --identity='"$me"'
-    --base-path='"$data_dir"'
-    --auto-update=all
-    --cache-size='"$cache"'
-    --no-secretstore
-    --no-hardware-wallets
-    --jsonrpc-port='"$http_port"'
-    --jsonrpc-interface=all
-    --jsonrpc-apis=safe
-    --jsonrpc-hosts=all
-    --jsonrpc-cors=all
-    --ws-port='"$ws_port"'
-    --ws-interface=all
-    --ws-apis=safe
-    --ws-origins=all
-    --ws-hosts=all
-    --no-ipc
-    --whisper
-    --whisper-pool-size=128
-    '
-
-elif [[ "$provider" == "geth" ]]
-then
-    provider_options='
-    --identity='"$me"'
-    --datadir='"$data_dir"'
-    --lightserv=50
-    --nousb
-    --cache='"$cache"'
-    --rpc
-    --rpcaddr=0.0.0.0
-    --rpcport='"$http_port"'
-    --rpcapi=safe
-    --rpccorsdomain=*
-    --rpcvhosts=*
-    --ws
-    --wsaddr=0.0.0.0
-    --wsport='"$ws_port"'
-    --wsapi=safe
-    --wsorigins=*
-    --ipcdisable
-    --shh
-    '
-fi
-
 echo
-echo "docker service create $docker_options parity/parity $provider_options"
-
-docker service create $docker_options parity/parity $provider_options
+echo "docker service create $docker_options $image"
+docker service create $docker_options $image
 docker service logs -f $name
