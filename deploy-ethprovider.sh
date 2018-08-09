@@ -73,7 +73,6 @@ CMD [ \
   "--rpc", \
   "--rpcaddr=0.0.0.0", \
   "--rpcport=$http_port", \
-  "--rpcapi=safe", \
   "--rpccorsdomain=*", \
   "--rpcvhosts=*", \
   "--ws", \
@@ -213,21 +212,16 @@ http {
         ssl_ciphers 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH';
         ssl_ecdh_curve secp384r1;
 
-        location /http {
-            proxy_pass http://provider:8545;
-            proxy_redirect off;
-            proxy_set_header Host \$host;
-            proxy_set_header X-Real-IP \$remote_addr;
-            proxy_set_header X-Forwarded-Proto \$scheme;
-            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Host \$server_name;
-        }
-
-        location /ws {
+        location = /ws {
             proxy_pass http://provider:8546;
             proxy_http_version 1.1;
             proxy_set_header Upgrade \$http_upgrade;
-            proxy_set_header Connection \$connection_upgrade;
+            proxy_set_header Connection "Upgrade";
+        }
+
+        location / {
+            proxy_pass http://provider:8545;
+            proxy_redirect off;
         }
     }
 }
