@@ -18,7 +18,7 @@ sync_port="30304"
 
 ## Build Docker Image
 
-image="$name_$provider:latest"
+image="${name}_${provider}:latest"
 tmp="/tmp/$name"
 mkdir -p $tmp
 
