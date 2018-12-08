@@ -24,12 +24,12 @@ mkdir -p $tmp
 cat - > $tmp/parity.Dockerfile <<EOF
 FROM ubuntu:16.04
 RUN apt-get update -y && apt-get install -y bash sudo curl
-RUN curl https://get.parity.io -Lk > /tmp/get-parity.sh && bash /tmp/get-parity.sh # v2.0.1
+RUN curl https://get.parity.io -Lk > /tmp/get-parity.sh && bash /tmp/get-parity.sh # v2.2.4-beta
 ENTRYPOINT ["/usr/bin/parity"]
 EOF
 
 cat - > $tmp/geth.Dockerfile <<EOF
-FROM ethereum/client-go:v1.8.13 as base
+FROM ethereum/client-go:v1.8.19 as base
 FROM alpine:latest
 COPY --from=base /usr/local/bin/geth /usr/local/bin
 RUN apk add --no-cache ca-certificates && mkdir /root/eth && mkdir /tmp/ipc
