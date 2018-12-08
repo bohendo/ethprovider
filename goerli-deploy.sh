@@ -14,6 +14,7 @@ name="goerli"
 cache="1024"
 http_port="8547"
 ws_port="8548"
+sync_port="30304"
 
 ## Build Docker Image
 
@@ -49,7 +50,7 @@ docker_options='
     --mount='"type=volume,source=${name}_data,destination=$data_dir"'
     --publish='"$http_port:$http_port"'
     --publish='"$ws_port:$ws_port"'
-    --publish=30303:30303
+    --publish='"$sync_port"':30303
     --detach
 '
 
