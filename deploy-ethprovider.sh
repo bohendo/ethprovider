@@ -4,10 +4,10 @@ set -e
 ## Config
 
 provider="parity"
-if [[ "$1" == "geth" ]]
-then
-    provider="geth"
-fi
+#if [[ "$1" == "geth" ]]
+#then
+#    provider="geth"
+#fi
 
 me=`whoami`
 name="ethprovider"
@@ -17,8 +17,8 @@ ws_port="8546"
 
 ## Build Docker Image
 
-image="ethprovider_$provider:latest"
-tmp="/tmp/ethprovider"
+image="$name_$provider:latest"
+tmp="/tmp/$name"
 mkdir -p $tmp
 
 cat - > $tmp/parity.Dockerfile <<EOF
@@ -102,7 +102,7 @@ then
 fi
 
 echo
-echo "docker service create $docker_options $image $provider_options"
+echo "docker service create $docker_options parity/parity $provider_options"
 
-docker service create $docker_options $image $provider_options
+docker service create $docker_options parity/parity $provider_options
 docker service logs -f $name
