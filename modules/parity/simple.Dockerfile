@@ -1,6 +1,4 @@
 FROM parity/parity:v2.2.6
-WORKDIR /root
-ENV HOME /root
 
 COPY entry.sh entry.sh
 
