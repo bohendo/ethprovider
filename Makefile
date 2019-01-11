@@ -22,8 +22,10 @@ log_finish=@echo "[Makefile] => Finished building $@ in $$((`date "+%s"` - `cat 
 # Begin Phony Rules
 .PHONY: default all dev prod clean stop purge deploy deploy-live test
 
-default: all
-all: proxy geth parity
+default: proxy simple
+all: proxy simple manual
+simple: proxy geth parity
+manual: proxy geth-manual parity-manual
 
 stop: 
 	bash ops/stop.sh
@@ -32,7 +34,7 @@ stop:
 clean:
 	rm -rf build/*
 
-deploy: all
+deploy: simple
 	docker tag $(project)_proxy:latest $(registry)/$(project)_proxy:latest
 	docker tag $(project)_geth:latest $(registry)/$(project)_geth:latest
 	docker tag $(project)_parity:latest $(registry)/$(project)_parity:latest
@@ -55,13 +57,22 @@ proxy: $(shell find $(proxy) $(find_options))
 	docker build --file $(proxy)/Dockerfile --tag $(project)_proxy:latest $(proxy)
 	$(log_finish) && touch build/proxy
 
-geth: $(geth)/Dockerfile
+geth: $(geth)/simple.Dockerfile
 	$(log_start)
-	docker build --file $(geth)/Dockerfile --tag $(project)_geth:latest $(geth)
+	docker build --file $(geth)/simple.Dockerfile --tag $(project)_geth:latest $(geth)
 	$(log_finish) && touch build/geth
 
-parity: $(parity)/Dockerfile
+parity: $(parity)/simple.Dockerfile
 	$(log_start)
-	docker build --file $(parity)/Dockerfile --tag $(project)_parity:latest $(parity)
+	docker build --file $(parity)/simple.Dockerfile --tag $(project)_parity:latest $(parity)
 	$(log_finish) && touch build/parity
 
+geth-manual: $(geth)/manual.Dockerfile
+	$(log_start)
+	docker build --file $(geth)/manual.Dockerfile --tag $(project)_geth:latest $(geth)
+	$(log_finish) && touch build/geth-manual
+
+parity-manual: $(parity)/manual.Dockerfile
+	$(log_start)
+	docker build --file $(parity)/manual.Dockerfile --tag $(project)_parity:latest $(parity)
+	$(log_finish) && touch build/parity-manual

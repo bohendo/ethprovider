@@ -1,13 +1,13 @@
-#!/bin/bash
+#!/bin/sh
 
 echo "Starting `which parity` in env:"
 env
 
 name=NAME; [[ -n "$name" ]] || name=bohendo
 data_dir=DATA_DIR; [[ -n "$data_dir" ]] || data_dir=/root/eth
-cache=CACHE; [[ -n "$cache" ]] || cache=
+cache=CACHE; [[ -n "$cache" ]] || cache=4096
 
-parity \
+exec parity \
   --identity=$name \
   --base-path=$data_dir \
   --cache-size=$cache \
