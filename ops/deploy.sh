@@ -4,6 +4,7 @@ set -e
 ########################################
 ## Config
 
+version=1.1.0
 name="`whoami`"
 cache="4096"
 data_dir="/root/eth"
@@ -13,7 +14,6 @@ email="$EMAIL"; [[ -n "$EMAIL" ]] || email="noreply@gmail.com";
 domain="$DOMAINNAME"; [[ -n "$DOMAINNAME" ]] || domain="localhost"
 mode="$MODE"; [[ -n "$mode" ]] || mode="dev"
 
-version=1.0.0
 project="ethprovider"
 registry="docker.io/`whoami`"
 
