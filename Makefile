@@ -1,6 +1,7 @@
 version=0.2.0
 project=ethprovider
 registry=docker.io/$(shell whoami)
+mode=simple # or manual
 
 # Get absolute paths to important dirs
 cwd=$(shell pwd)
@@ -22,7 +23,7 @@ log_finish=@echo "[Makefile] => Finished building $@ in $$((`date "+%s"` - `cat 
 # Begin Phony Rules
 .PHONY: default all simple manual stop clean deploy deploy-live proxy-logs provider-logs
 
-default: proxy simple
+default: proxy $(mode)
 all: proxy simple manual
 simple: proxy geth parity
 manual: proxy geth-manual parity-manual
@@ -36,8 +37,8 @@ clean:
 
 deploy: simple
 	docker tag $(project)_proxy:latest $(registry)/$(project)_proxy:latest
-	docker tag $(project)_geth:latest $(registry)/$(project)_geth:latest
-	docker tag $(project)_parity:latest $(registry)/$(project)_parity:latest
+	docker tag $(project)_geth:$(mode) $(registry)/$(project)_geth:latest
+	docker tag $(project)_parity:$(mode) $(registry)/$(project)_parity:latest
 	docker push $(registry)/$(project)_proxy:latest
 	docker push $(registry)/$(project)_geth:latest
 	docker push $(registry)/$(project)_parity:latest
@@ -46,8 +47,8 @@ deploy: simple
 
 deploy-live: simple
 	docker tag $(project)_proxy:latest $(registry)/$(project)_proxy:$(version)
-	docker tag $(project)_geth:latest $(registry)/$(project)_geth:$(version)
-	docker tag $(project)_parity:latest $(registry)/$(project)_parity:$(version)
+	docker tag $(project)_geth:$(mode) $(registry)/$(project)_geth:$(version)
+	docker tag $(project)_parity:$(mode) $(registry)/$(project)_parity:$(version)
 	docker push $(registry)/$(project)_proxy:$(version)
 	docker push $(registry)/$(project)_geth:$(version)
 	docker push $(registry)/$(project)_parity:$(version)
@@ -66,20 +67,20 @@ proxy: $(shell find $(proxy) $(find_options))
 
 geth: $(geth)/simple.Dockerfile $(geth)/entry.sh
 	$(log_start)
-	docker build --file $(geth)/simple.Dockerfile --tag $(project)_geth:latest $(geth)
+	docker build --file $(geth)/simple.Dockerfile --tag $(project)_geth:simple $(geth)
 	$(log_finish) && touch build/geth
 
 parity: $(parity)/simple.Dockerfile $(parity)/entry.sh
 	$(log_start)
-	docker build --file $(parity)/simple.Dockerfile --tag $(project)_parity:latest $(parity)
+	docker build --file $(parity)/simple.Dockerfile --tag $(project)_parity:simple $(parity)
 	$(log_finish) && touch build/parity
 
 geth-manual: $(geth)/manual.Dockerfile $(geth)/entry.sh
 	$(log_start)
-	docker build --file $(geth)/manual.Dockerfile --tag $(project)_geth:latest $(geth)
+	docker build --file $(geth)/manual.Dockerfile --tag $(project)_geth:manual $(geth)
 	$(log_finish) && touch build/geth-manual
 
 parity-manual: $(parity)/manual.Dockerfile $(parity)/entry.sh
 	$(log_start)
-	docker build --file $(parity)/manual.Dockerfile --tag $(project)_parity:latest $(parity)
+	docker build --file $(parity)/manual.Dockerfile --tag $(project)_parity:manual $(parity)
 	$(log_finish) && touch build/parity-manual
