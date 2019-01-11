@@ -54,10 +54,7 @@ deploy-live: all
 	bash ops/stop.sh
 	MODE=live bash ops/deploy.sh
 
-proxy-logs:
-	bash ops/logs.sh proxy
-
-provider-logs:
+logs:
 	bash ops/logs.sh provider
 
 # Begin Real Rules
