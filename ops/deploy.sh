@@ -45,6 +45,9 @@ services:
       mode: global
     depends_on:
       - provider
+    environment:
+      DOMAINNAME: $DOMAINNAME
+      EMAIL: $EMAIL
     volumes:
       - certs:/etc/letsencrypt
     ports:
@@ -60,7 +63,6 @@ services:
     volumes:
       - ${provider}_data:$data_dir
     ports:
-      - "8545:8545"
       - "8546:8546"
       - "30303:30303"
 EOF
