@@ -59,22 +59,22 @@ proxy: $(shell find $(proxy) $(find_options))
 	docker build --file $(proxy)/Dockerfile --tag $(project)_proxy:latest $(proxy)
 	$(log_finish) && touch build/proxy
 
-geth: $(geth)/simple.Dockerfile
+geth: $(geth)/simple.Dockerfile $(geth)/entry.sh
 	$(log_start)
 	docker build --file $(geth)/simple.Dockerfile --tag $(project)_geth:latest $(geth)
 	$(log_finish) && touch build/geth
 
-parity: $(parity)/simple.Dockerfile
+parity: $(parity)/simple.Dockerfile $(parity)/entry.sh
 	$(log_start)
 	docker build --file $(parity)/simple.Dockerfile --tag $(project)_parity:latest $(parity)
 	$(log_finish) && touch build/parity
 
-geth-manual: $(geth)/manual.Dockerfile
+geth-manual: $(geth)/manual.Dockerfile $(geth)/entry.sh
 	$(log_start)
 	docker build --file $(geth)/manual.Dockerfile --tag $(project)_geth:latest $(geth)
 	$(log_finish) && touch build/geth-manual
 
-parity-manual: $(parity)/manual.Dockerfile
+parity-manual: $(parity)/manual.Dockerfile $(parity)/entry.sh
 	$(log_start)
 	docker build --file $(parity)/manual.Dockerfile --tag $(project)_parity:latest $(parity)
 	$(log_finish) && touch build/parity-manual
