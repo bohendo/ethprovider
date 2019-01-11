@@ -35,7 +35,7 @@ stop:
 clean:
 	rm -rf build/*
 
-deploy: simple
+deploy: $(mode)
 	docker tag $(project)_proxy:latest $(registry)/$(project)_proxy:latest
 	docker tag $(project)_geth:$(mode) $(registry)/$(project)_geth:latest
 	docker tag $(project)_parity:$(mode) $(registry)/$(project)_parity:latest
@@ -45,7 +45,7 @@ deploy: simple
 	bash ops/stop.sh
 	bash ops/deploy.sh
 
-deploy-live: simple
+deploy-live: $(mode)
 	docker tag $(project)_proxy:latest $(registry)/$(project)_proxy:$(version)
 	docker tag $(project)_geth:$(mode) $(registry)/$(project)_geth:$(version)
 	docker tag $(project)_parity:$(mode) $(registry)/$(project)_parity:$(version)
