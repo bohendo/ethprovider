@@ -59,6 +59,8 @@ services:
     volumes:
       - ${provider}_data:$data_dir
     ports:
+      - "8545:8545"
+      - "8546:8546"
       - "30303:30303"
 EOF
 
