@@ -13,7 +13,7 @@ email="$EMAIL"; [[ -n "$EMAIL" ]] || email="noreply@gmail.com";
 domain="$DOMAINNAME"; [[ -n "$DOMAINNAME" ]] || domain="localhost"
 mode="$MODE"; [[ -n "$mode" ]] || mode="dev"
 
-version=0.2.0
+version=1.0.0
 project="ethprovider"
 registry="docker.io/`whoami`"
 
