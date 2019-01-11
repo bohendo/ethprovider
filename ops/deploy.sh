@@ -27,6 +27,8 @@ provider_image="$registry/${project}_$provider:$version"
 ########################################
 ## Deploy
 
+echo "Deploying images $proxy_image and $provider_image"
+
 tmp=/tmp/ethprovider
 mkdir -p $tmp
 cat - > $tmp/docker-compose.yml <<EOF
