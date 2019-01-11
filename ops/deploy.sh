@@ -41,18 +41,21 @@ services:
 
   proxy:
     image: $proxy_image
-    deploy:
-      mode: global
     depends_on:
       - provider
     environment:
       DOMAINNAME: $DOMAINNAME
       EMAIL: $EMAIL
-    volumes:
-      - certs:/etc/letsencrypt
+    logging:
+      driver: "json-file"
+      options:
+          max-file: 10
+          max-size: 10m
     ports:
       - "80:80"
       - "443:443"
+    volumes:
+      - certs:/etc/letsencrypt
 
   provider:
     image: $provider_image
@@ -60,10 +63,15 @@ services:
       NAME: $name
       DATA_DIR: $data_dir
       CACHE: $cache
-    volumes:
-      - ${provider}_data:$data_dir
+    logging:
+      driver: "json-file"
+      options:
+          max-file: 10
+          max-size: 10m
     ports:
       - "30303:30303"
+    volumes:
+      - ${provider}_data:$data_dir
 EOF
 
 docker stack deploy --compose-file $tmp/docker-compose.yml eth
