@@ -35,6 +35,7 @@ version: '3.4'
 volumes:
   certs:
   ${provider}_data:
+    external: true
 
 services:
 
