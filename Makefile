@@ -1,3 +1,4 @@
+version=0.2.0
 project=ethprovider
 registry=docker.io/$(shell whoami)
 
@@ -14,13 +15,12 @@ SHELL=/bin/bash
 # Env setup
 find_options=-type f -not -path "*/node_modules/*" -not -name "*.swp" -not -path "*/.*"
 $(shell mkdir -p build)
-version=0.2.0
 
 log_start=@echo "=============";echo "[Makefile] => Start building $@"; date "+%s" > build/.timestamp
 log_finish=@echo "[Makefile] => Finished building $@ in $$((`date "+%s"` - `cat build/.timestamp`)) seconds";echo "=============";echo
 
 # Begin Phony Rules
-.PHONY: default all dev prod clean stop purge deploy deploy-live test
+.PHONY: default all simple manual stop clean deploy deploy-live
 
 default: proxy simple
 all: proxy simple manual
@@ -41,6 +41,7 @@ deploy: simple
 	docker push $(registry)/$(project)_proxy:latest
 	docker push $(registry)/$(project)_geth:latest
 	docker push $(registry)/$(project)_parity:latest
+	bash ops/deploy.sh
 
 deploy-live: all
 	docker tag $(project)_database:latest $(registry)/$(project)_database:$(version)
@@ -49,6 +50,7 @@ deploy-live: all
 	docker push $(registry)/$(project)_database:$(version)
 	docker push $(registry)/$(project)_hub:$(version)
 	docker push $(registry)/$(project)_proxy:$(version)
+	MODE=live bash ops/deploy.sh
 
 # Begin Real Rules
 

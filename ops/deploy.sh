@@ -4,18 +4,25 @@ set -e
 ########################################
 ## Config
 
-provider="parity"
-email="$EMAIL"; [[ -n "$EMAIL" ]] || email="noreply@gmail.com";
-domain="$DOMAINNAME"; [[ -z "$DOMAINNAME" ]] || domain="localhost"
-
-project="ethprovider"
-registry="docker.io/`whoami`"
-proxy_image="$registry/${project}_proxy:latest"
-provider_image="$registry/${project}_$provider:latest"
-
-name="bohendo"
+name="`whoami`"
 cache="4096"
 data_dir="/root/eth"
+
+provider="parity"
+email="$EMAIL"; [[ -n "$EMAIL" ]] || email="noreply@gmail.com";
+domain="$DOMAINNAME"; [[ -n "$DOMAINNAME" ]] || domain="localhost"
+mode="$MODE"; [[ -n "$mode" ]] || mode="dev"
+
+version=0.2.0
+project="ethprovider"
+registry="docker.io/`whoami`"
+
+if [[ "$mode" != "live" ]]
+then version=latest
+fi
+
+proxy_image="$registry/${project}_proxy:$version"
+provider_image="$registry/${project}_$provider:$version"
 
 ########################################
 ## Deploy

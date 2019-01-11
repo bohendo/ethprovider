@@ -1,11 +1,11 @@
 #!/bin/sh
 
-echo "Starting `which parity` in env:"
-env
+name="$NAME"; [ -n "$name" ] || name="`whoami`"
+data_dir="$DATA_DIR"; [ -n "$data_dir" ] || data_dir="/root/eth"
+cache="$CACHE"; [ -n "$cache" ] || cache="2048"
 
-name=$NAME; [[ -n "$name" ]] || name=bohendo
-data_dir=$DATA_DIR; [[ -n "$data_dir" ]] || data_dir=/root/eth
-cache=$CACHE; [[ -n "$cache" ]] || cache=2048
+echo "Starting `which parity` in env:"
+echo "name=$name data_dir=$data_dir cache=$cache"
 
 exec parity \
   --identity=$name \
