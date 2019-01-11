@@ -1,7 +1,7 @@
 version=1.0.0
 project=ethprovider
 registry=docker.io/$(shell whoami)
-mode=simple # or manual
+mode=manual # simple or manual
 
 # Get absolute paths to important dirs
 cwd=$(shell pwd)
