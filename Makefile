@@ -44,13 +44,13 @@ deploy: simple
 	bash ops/stop.sh
 	bash ops/deploy.sh
 
-deploy-live: all
-	docker tag $(project)_database:latest $(registry)/$(project)_database:$(version)
-	docker tag $(project)_hub:latest $(registry)/$(project)_hub:$(version)
+deploy-live: simple
 	docker tag $(project)_proxy:latest $(registry)/$(project)_proxy:$(version)
-	docker push $(registry)/$(project)_database:$(version)
-	docker push $(registry)/$(project)_hub:$(version)
+	docker tag $(project)_geth:latest $(registry)/$(project)_geth:$(version)
+	docker tag $(project)_parity:latest $(registry)/$(project)_parity:$(version)
 	docker push $(registry)/$(project)_proxy:$(version)
+	docker push $(registry)/$(project)_geth:$(version)
+	docker push $(registry)/$(project)_parity:$(version)
 	bash ops/stop.sh
 	MODE=live bash ops/deploy.sh
 
