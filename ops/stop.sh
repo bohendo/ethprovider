@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-name=$1 && [[ -n "$name" ]] || name=ethprovider
+name=$1 && [[ -n "$name" ]] || name=eth
 
 docker stack rm $name 2> /dev/null || true
 
