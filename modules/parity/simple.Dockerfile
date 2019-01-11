@@ -1,4 +1,5 @@
 FROM parity/parity:v2.2.6
+ENV PATH /home/parity/bin:$PATH
 
 COPY entry.sh entry.sh
 
