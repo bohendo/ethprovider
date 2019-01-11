@@ -10,6 +10,7 @@ RUN apk add --update --no-cache --virtual build-tools gcc git go linux-headers m
  && cd /go-ethereum \
  && git checkout $VERSION \
  && make geth \
+ && cp /go-ethereum/build/bin/geth /usr/local/bin/ \
  && cd $HOME \
  && rm -rf /go-ethereum \
  && apk del build-tools \
