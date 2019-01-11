@@ -1,11 +1,11 @@
-FROM alpine:edge as builder
+FROM alpine:edge
 WORKDIR /root
 ENV HOME /root
 ENV RUST_BACKTRACE 1
 ENV VERSION v2.2.6
 
 # install build tools, download source code, and build
-RUN apk add --update --no-cache --virtual build-tools \
+RUN apk add --no-cache --virtual build-tools \
     build-base cargo cmake eudev-dev git linux-headers perl rust \
  && git clone --progress https://github.com/paritytech/parity-ethereum.git /parity \
  && cd /parity \
@@ -16,10 +16,7 @@ RUN apk add --update --no-cache --virtual build-tools \
  && cd $HOME \
  && rm -rf /parity \
  && apk del build-tools \
- && apk add --update --no-cache ca-certificates
-
-RUN which parity
-RUN parity --help
+ && apk add --no-cache ca-certificates eudev libgcc libstdc++
 
 COPY entry.sh entry.sh
 
