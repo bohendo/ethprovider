@@ -12,8 +12,6 @@ COPY entry.sh /root/entry.sh
 COPY nginx.conf /etc/nginx/nginx.conf
 
 VOLUME /etc/letsencrypt
-
-EXPOSE 80
-EXPOSE 443
+EXPOSE 80 443
 
 ENTRYPOINT ["bash", "/root/entry.sh"]

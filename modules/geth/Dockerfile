@@ -1,29 +1,11 @@
-FROM ethereum/client-go:v1.8.13 as base
+FROM ethereum/client-go:v1.8.20 as base
+WORKDIR /root
+ENV HOME /root
 
-FROM alpine:3.8
+RUN apk add --update --no-cache bash ca-certificates
 
-COPY --from=base /usr/local/bin/geth /usr/local/bin
+COPY entry.sh entry.sh
 
-RUN apk add --no-cache ca-certificates && mkdir /root/eth && mkdir /tmp/ipc
+EXPOSE 8545 8546 30303 30303/udp
 
-ENTRYPOINT ["/usr/local/bin/geth"]
-
-CMD [ \
-  "--identity=$me", \
-  "--datadir=$data_dir", \
-  "--lightserv=50", \
-  "--nousb", \
-  "--cache=$cache", \
-  "--rpc", \
-  "--rpcaddr=0.0.0.0", \
-  "--rpcport=$http_port", \
-  "--rpccorsdomain=*", \
-  "--rpcvhosts=*", \
-  "--ws", \
-  "--wsaddr=0.0.0.0", \
-  "--wsport=$ws_port", \
-  "--wsapi=safe", \
-  "--wsorigins=*", \
-  "--ipcdisable", \
-  "--shh" \
-]
+ENTRYPOINT ["bash", "entry.sh"]
