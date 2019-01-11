@@ -20,7 +20,7 @@ log_start=@echo "=============";echo "[Makefile] => Start building $@"; date "+%
 log_finish=@echo "[Makefile] => Finished building $@ in $$((`date "+%s"` - `cat build/.timestamp`)) seconds";echo "=============";echo
 
 # Begin Phony Rules
-.PHONY: default all simple manual stop clean deploy deploy-live
+.PHONY: default all simple manual stop clean deploy deploy-live proxy-logs provider-logs
 
 default: proxy simple
 all: proxy simple manual
@@ -41,6 +41,7 @@ deploy: simple
 	docker push $(registry)/$(project)_proxy:latest
 	docker push $(registry)/$(project)_geth:latest
 	docker push $(registry)/$(project)_parity:latest
+	bash ops/stop.sh
 	bash ops/deploy.sh
 
 deploy-live: all
@@ -50,7 +51,14 @@ deploy-live: all
 	docker push $(registry)/$(project)_database:$(version)
 	docker push $(registry)/$(project)_hub:$(version)
 	docker push $(registry)/$(project)_proxy:$(version)
+	bash ops/stop.sh
 	MODE=live bash ops/deploy.sh
+
+proxy-logs:
+	bash ops/logs.sh proxy
+
+provider-logs:
+	bash ops/logs.sh provider
 
 # Begin Real Rules
 
