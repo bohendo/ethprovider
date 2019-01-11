@@ -4,14 +4,14 @@ set -e
 ########################################
 ## Config
 
-provider=parity
+provider="parity"
 email="$EMAIL"; [[ -n "$EMAIL" ]] || email="noreply@gmail.com";
 domain="$DOMAINNAME"; [[ -z "$DOMAINNAME" ]] || domain="localhost"
 
-project=ethprovider
-registry=docker.io/$(shell whoami)
-proxy_image=$registry/${project}_proxy:latest
-provider_image=$registry/${project}_$provider:latest
+project="ethprovider"
+registry="docker.io/`whoami`"
+proxy_image="$registry/${project}_proxy:latest"
+provider_image="$registry/${project}_$provider:latest"
 
 name="bohendo"
 cache="4096"
