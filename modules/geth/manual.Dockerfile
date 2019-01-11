@@ -1,19 +1,20 @@
-FROM alpine:3.8 as builder
-
-# install build tools
-RUN apk add --no-cache --virtual .build-deps bash gcc go linux-headers make musl-dev openssl
-
-RUN git clone https://github.com/ethereum/go-ethereum.git /go-ethereum
-WORKDIR /go-ethereum
-RUN make geth
-
 FROM alpine:3.8
 WORKDIR /root
 ENV HOME /root
 
-RUN apk add --update --no-cache ca-certificates
+ENV VERSION v1.8.20
 
-COPY --from=builder /go-ethereum/build/bin/geth /usr/local/bin/
+# install build tools, download geth source, and build
+RUN apk add --update --no-cache --virtual build-tools gcc git go linux-headers make musl-dev openssl \
+ && git clone --progress https://github.com/ethereum/go-ethereum.git /go-ethereum \
+ && cd /go-ethereum \
+ && git checkout $VERSION \
+ && make geth \
+ && cd $HOME \
+ && rm -rf /go-ethereum \
+ && apk del build-tools \
+ && apk add --update --no-cache ca-certificates
+
 COPY entry.sh entry.sh
 
 EXPOSE 8545 8546 30303 30303/udp
