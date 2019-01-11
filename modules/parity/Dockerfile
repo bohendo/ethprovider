@@ -1,25 +1,24 @@
-FROM ubuntu:16.04
-RUN apt-get update -y && apt-get install -y bash sudo curl
-RUN curl https://get.parity.io -Lk > /tmp/get-parity.sh && bash /tmp/get-parity.sh # 2.0.1
-ENTRYPOINT ["/usr/bin/parity"]
-CMD [ \
-  "--identity=$me", \
-  "--base-path=$data_dir", \
-  "--auto-update=all", \
-  "--cache-size=$cache", \
-  "--no-secretstore", \
-  "--no-hardware-wallets", \
-  "--jsonrpc-port=$http_port", \
-  "--jsonrpc-interface=all", \
-  "--jsonrpc-apis=safe", \
-  "--jsonrpc-hosts=all", \
-  "--jsonrpc-cors=all", \
-  "--ws-port=$ws_port", \
-  "--ws-interface=all", \
-  "--ws-apis=safe", \
-  "--ws-origins=all", \
-  "--ws-hosts=all", \
-  "--no-ipc", \
-  "--whisper", \
-  "--whisper-pool-size=128" \
-]
+FROM alpine:3.8 as builder
+ENV RUST_BACKTRACE 1
+
+RUN apk add --update --no-cache binutils cargo curl eudev-dev file g++ gcc git libusb-dev linux-headers make musl-dev openssl-dev pkgconfig rust
+RUN rustc -vV && cargo -V && gcc -v && g++ -v 
+RUN git clone --progress https://github.com/paritytech/parity-ethereum.git /parity
+WORKDIR /parity
+RUN git checkout v2.2.6
+RUN ls
+RUN cargo build --release --verbose
+RUN ls /build/parity/target/release/parity && strip /build/parity/target/release/parity && file /build/parity/target/release/parity
+
+FROM alpine:3.8
+WORKDIR /root
+ENV HOME /root
+
+RUN apk add --update --no-cache bash ca-certificates
+
+COPY --from=builder /build/parity/target/release/parity /usr/bin/parity
+COPY entry.sh entry.sh
+
+EXPOSE 8545 8546 30303 30303/udp
+
+ENTRYPOINT ["bash", "entry.sh"]
