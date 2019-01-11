@@ -3,9 +3,9 @@
 echo "Starting `which geth` in env:"
 env
 
-name=NAME; [[ -n "$name" ]] || name=bohendo
-data_dir=DATA_DIR; [[ -n "$data_dir" ]] || data_dir=/root/eth
-cache=CACHE; [[ -n "$cache" ]] || cache=
+name=$NAME; [[ -n "$name" ]] || name=bohendo
+data_dir=$DATA_DIR; [[ -n "$data_dir" ]] || data_dir=/root/eth
+cache=$CACHE; [[ -n "$cache" ]] || cache=2048
 
 exec geth \
   --identity=$name \

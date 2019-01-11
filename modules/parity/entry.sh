@@ -3,9 +3,9 @@
 echo "Starting `which parity` in env:"
 env
 
-name=NAME; [[ -n "$name" ]] || name=bohendo
-data_dir=DATA_DIR; [[ -n "$data_dir" ]] || data_dir=/root/eth
-cache=CACHE; [[ -n "$cache" ]] || cache=4096
+name=$NAME; [[ -n "$name" ]] || name=bohendo
+data_dir=$DATA_DIR; [[ -n "$data_dir" ]] || data_dir=/root/eth
+cache=$CACHE; [[ -n "$cache" ]] || cache=2048
 
 exec parity \
   --identity=$name \
