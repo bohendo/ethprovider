@@ -1,4 +1,4 @@
-version=1.1.0
+version=1.1.1
 project=ethprovider
 registry=docker.io/$(shell whoami)
 mode=manual # simple or manual
