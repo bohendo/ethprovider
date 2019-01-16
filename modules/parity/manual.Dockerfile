@@ -2,7 +2,7 @@ FROM alpine:edge
 WORKDIR /root
 ENV HOME /root
 ENV RUST_BACKTRACE 1
-ENV VERSION v2.2.6
+ENV VERSION v2.3.0
 
 # install build tools, download source code, and build
 RUN apk add --no-cache --virtual build-tools \
