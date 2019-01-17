@@ -4,7 +4,7 @@ set -e
 ########################################
 ## Config
 
-version=1.1.1
+version=1.1.2
 name="`whoami`"
 cache="4096"
 data_dir="/root/eth"

@@ -1,7 +1,9 @@
-version=1.1.1
+# (s)imple or (m)anual
+mode=manual
+version=1.1.2
+
 project=ethprovider
 registry=docker.io/$(shell whoami)
-mode=manual # simple or manual
 
 # Get absolute paths to important dirs
 cwd=$(shell pwd)
