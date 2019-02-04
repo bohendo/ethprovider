@@ -1,4 +1,5 @@
-FROM parity/parity:v2.3.2
+ARG VERSION=latest
+FROM parity/parity:v$VERSION
 USER root
 WORKDIR /root
 ENV HOME /root

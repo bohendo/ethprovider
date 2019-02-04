@@ -1,4 +1,5 @@
-FROM ethereum/client-go:v1.8.22
+ARG VERSION=latest
+FROM ethereum/client-go:v$VERSION
 USER root
 WORKDIR /root
 ENV HOME /root
