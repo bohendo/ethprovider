@@ -9,6 +9,10 @@ proxy_version=$(shell grep proxy versions | awk -F '=' '{print $$2}')
 geth_version=$(shell grep geth versions | awk -F '=' '{print $$2}')
 parity_version=$(shell grep parity versions | awk -F '=' '{print $$2}')
 
+proxy_image=$(registry)/$(project)_proxy:$(proxy_version)
+geth_image=$(registry)/$(project)_geth:$(geth_version)
+parity_image=$(registry)/$(project)_parity:$(parity_version)
+
 # Get absolute paths to important dirs
 cwd=$(shell pwd)
 geth=$(cwd)/modules/geth
@@ -45,18 +49,14 @@ clean:
 	rm -rf build/*
 
 deploy: $(mode)
-	docker tag $(project)_proxy:$(proxy_version) $(registry)/$(project)_proxy:$(proxy_version)
-	echo 
-	docker tag $(project)_geth:$(tag)$(geth_version) $(registry)/$(project)_geth:$(geth_version)
-	docker tag $(project)_parity:$(tag)$(parity_version) $(registry)/$(project)_parity:$(parity_version)
-	docker push $(registry)/$(project)_proxy:$(proxy_version)
-	docker push $(registry)/$(project)_geth:$(geth_version)
-	docker push $(registry)/$(project)_parity:$(parity_version)
+	docker tag $(project)_proxy:$(proxy_version) $(proxy_image)
+	docker tag $(project)_geth:$(tag)$(geth_version) $(geth_image)
+	docker tag $(project)_parity:$(tag)$(parity_version) $(parity_image)
+	docker push $(proxy_image)
+	docker push $(geth_image)
+	docker push $(parity_image)
 	bash ops/stop.sh
 	bash ops/deploy.sh
-
-logs:
-	bash ops/logs.sh provider
 
 # Begin Real Rules
 
