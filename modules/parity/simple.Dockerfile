@@ -1,4 +1,4 @@
-FROM parity/parity:v2.3.0
+FROM parity/parity:v2.3.2
 USER root
 WORKDIR /root
 ENV HOME /root
