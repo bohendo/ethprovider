@@ -1,4 +1,4 @@
-FROM ethereum/client-go:v1.8.21
+FROM ethereum/client-go:v1.8.22
 USER root
 WORKDIR /root
 ENV HOME /root

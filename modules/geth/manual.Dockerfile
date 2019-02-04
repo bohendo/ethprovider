@@ -1,7 +1,7 @@
 FROM alpine:3.8
 WORKDIR /root
 ENV HOME /root
-ENV VERSION v1.8.21
+ENV VERSION v1.8.22
 
 # install build tools, download source code, and build
 RUN apk add --no-cache --virtual build-tools \
