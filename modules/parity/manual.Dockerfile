@@ -9,7 +9,7 @@ RUN apk add --no-cache --virtual build-tools \
     build-base cargo cmake eudev-dev git linux-headers perl rust \
  && git clone --progress https://github.com/paritytech/parity-ethereum.git /parity \
  && cd /parity \
- && git checkout $VERSION \
+ && git checkout v$VERSION \
  && cargo build --release --target x86_64-alpine-linux-musl --verbose \
  && strip target/x86_64-alpine-linux-musl/release/parity \
  && cp target/x86_64-alpine-linux-musl/release/parity /usr/local/bin/ \
