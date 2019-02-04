@@ -1,9 +1,13 @@
-# (s)imple or (m)anual
+# mode can be simple or manual
 mode=manual
-version=1.1.2
+tag=$(shell echo $(mode) | head -c1)
 
 project=ethprovider
 registry=docker.io/$(shell whoami)
+
+proxy_version=$(shell grep proxy versions | awk -F '=' '{print $$2}')
+geth_version=$(shell grep geth versions | awk -F '=' '{print $$2}')
+parity_version=$(shell grep parity versions | awk -F '=' '{print $$2}')
 
 # Get absolute paths to important dirs
 cwd=$(shell pwd)
@@ -25,6 +29,9 @@ log_finish=@echo "[Makefile] => Finished building $@ in $$((`date "+%s"` - `cat 
 # Begin Phony Rules
 .PHONY: default all simple manual stop clean deploy deploy-live proxy-logs provider-logs
 
+debug:
+	echo $(tag)
+
 default: proxy $(mode)
 all: proxy simple manual
 simple: proxy geth parity
@@ -38,24 +45,15 @@ clean:
 	rm -rf build/*
 
 deploy: $(mode)
-	docker tag $(project)_proxy:latest $(registry)/$(project)_proxy:latest
-	docker tag $(project)_geth:$(mode) $(registry)/$(project)_geth:latest
-	docker tag $(project)_parity:$(mode) $(registry)/$(project)_parity:latest
-	docker push $(registry)/$(project)_proxy:latest
-	docker push $(registry)/$(project)_geth:latest
-	docker push $(registry)/$(project)_parity:latest
+	docker tag $(project)_proxy:$(proxy_version) $(registry)/$(project)_proxy:$(proxy_version)
+	echo 
+	docker tag $(project)_geth:$(tag)$(geth_version) $(registry)/$(project)_geth:$(geth_version)
+	docker tag $(project)_parity:$(tag)$(parity_version) $(registry)/$(project)_parity:$(parity_version)
+	docker push $(registry)/$(project)_proxy:$(proxy_version)
+	docker push $(registry)/$(project)_geth:$(geth_version)
+	docker push $(registry)/$(project)_parity:$(parity_version)
 	bash ops/stop.sh
 	bash ops/deploy.sh
-
-deploy-live: $(mode)
-	docker tag $(project)_proxy:latest $(registry)/$(project)_proxy:$(version)
-	docker tag $(project)_geth:$(mode) $(registry)/$(project)_geth:$(version)
-	docker tag $(project)_parity:$(mode) $(registry)/$(project)_parity:$(version)
-	docker push $(registry)/$(project)_proxy:$(version)
-	docker push $(registry)/$(project)_geth:$(version)
-	docker push $(registry)/$(project)_parity:$(version)
-	bash ops/stop.sh
-	MODE=live bash ops/deploy.sh
 
 logs:
 	bash ops/logs.sh provider
@@ -64,25 +62,25 @@ logs:
 
 proxy: $(shell find $(proxy) $(find_options))
 	$(log_start)
-	docker build --file $(proxy)/Dockerfile --tag $(project)_proxy:latest $(proxy)
+	docker build --file $(proxy)/Dockerfile --tag $(project)_proxy:$(proxy_version) $(proxy)
 	$(log_finish) && touch build/proxy
-
-geth: $(geth)/simple.Dockerfile $(geth)/entry.sh
-	$(log_start)
-	docker build --file $(geth)/simple.Dockerfile --tag $(project)_geth:simple $(geth)
-	$(log_finish) && touch build/geth
-
-parity: $(parity)/simple.Dockerfile $(parity)/entry.sh
-	$(log_start)
-	docker build --file $(parity)/simple.Dockerfile --tag $(project)_parity:simple $(parity)
-	$(log_finish) && touch build/parity
 
 geth-manual: $(geth)/manual.Dockerfile $(geth)/entry.sh
 	$(log_start)
-	docker build --file $(geth)/manual.Dockerfile --tag $(project)_geth:manual $(geth)
+	docker build --file $(geth)/manual.Dockerfile --build-arg VERSION=$(geth_version) --tag $(project)_geth:m$(geth_version) $(geth)
 	$(log_finish) && touch build/geth-manual
+
+geth: $(geth)/simple.Dockerfile $(geth)/entry.sh
+	$(log_start)
+	docker build --file $(geth)/simple.Dockerfile --build-arg VERSION=$(geth_version) --tag $(project)_geth:s$(geth_version) $(geth)
+	$(log_finish) && touch build/geth
 
 parity-manual: $(parity)/manual.Dockerfile $(parity)/entry.sh
 	$(log_start)
-	docker build --file $(parity)/manual.Dockerfile --tag $(project)_parity:manual $(parity)
+	docker build --file $(parity)/manual.Dockerfile --build-arg VERSION=$(parity_version) --tag $(project)_parity:m$(parity_version) $(parity)
 	$(log_finish) && touch build/parity-manual
+
+parity: $(parity)/simple.Dockerfile $(parity)/entry.sh
+	$(log_start)
+	docker build --file $(parity)/simple.Dockerfile --build-arg VERSION=$(parity_version) --tag $(project)_parity:s$(parity_version) $(parity)
+	$(log_finish) && touch build/parity

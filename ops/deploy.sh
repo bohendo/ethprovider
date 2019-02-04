@@ -4,7 +4,15 @@ set -e
 ########################################
 ## Config
 
-version=1.1.2
+proxy_version="`grep proxy versions | awk -F '=' '{print $2}'`"
+geth_version="`grep geth versions | awk -F '=' '{print $2}'`"
+parity_version="`grep parity versions | awk -F '=' '{print $2}'`"
+
+echo $proxy_version
+echo $geth_version
+echo $parity_version
+exit
+
 name="`whoami`"
 cache="4096"
 data_dir="/root/eth"
@@ -12,14 +20,9 @@ data_dir="/root/eth"
 provider="parity"
 email="$EMAIL"; [[ -n "$EMAIL" ]] || email="noreply@gmail.com";
 domain="$DOMAINNAME"; [[ -n "$DOMAINNAME" ]] || domain="localhost"
-mode="$MODE"; [[ -n "$mode" ]] || mode="dev"
 
 project="ethprovider"
 registry="docker.io/`whoami`"
-
-if [[ "$mode" != "live" ]]
-then version=latest
-fi
 
 proxy_image="$registry/${project}_proxy:$version"
 provider_image="$registry/${project}_$provider:$version"
