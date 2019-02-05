@@ -8,11 +8,6 @@ proxy_version="`grep proxy versions | awk -F '=' '{print $2}'`"
 geth_version="`grep geth versions | awk -F '=' '{print $2}'`"
 parity_version="`grep parity versions | awk -F '=' '{print $2}'`"
 
-echo $proxy_version
-echo $geth_version
-echo $parity_version
-exit
-
 name="`whoami`"
 cache="4096"
 data_dir="/root/eth"
