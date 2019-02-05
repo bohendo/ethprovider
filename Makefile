@@ -48,13 +48,15 @@ stop:
 clean:
 	rm -rf build/*
 
-deploy: $(mode)
+push: $(mode)
 	docker tag $(project)_proxy:$(proxy_version) $(proxy_image)
 	docker tag $(project)_geth:$(tag)$(geth_version) $(geth_image)
 	docker tag $(project)_parity:$(tag)$(parity_version) $(parity_image)
 	docker push $(proxy_image)
 	docker push $(geth_image)
 	docker push $(parity_image)
+
+deploy: push
 	bash ops/stop.sh
 	bash ops/deploy.sh
 
