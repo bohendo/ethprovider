@@ -56,7 +56,7 @@ push: $(mode)
 	docker push $(geth_image)
 	docker push $(parity_image)
 
-deploy: push
+deploy:
 	bash ops/stop.sh
 	bash ops/deploy.sh
 
