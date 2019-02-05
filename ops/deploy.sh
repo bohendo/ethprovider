@@ -19,8 +19,11 @@ domain="$DOMAINNAME"; [[ -n "$DOMAINNAME" ]] || domain="localhost"
 project="ethprovider"
 registry="docker.io/`whoami`"
 
-proxy_image="$registry/${project}_proxy:$version"
-provider_image="$registry/${project}_$provider:$version"
+proxy_image="$registry/${project}_proxy:$proxy_version"
+if [[ "$provider" == "geth" ]]
+then provider_image="$registry/${project}_$provider:$geth_version"
+else provider_image="$registry/${project}_$provider:$parity_version"
+fi
 
 ########################################
 ## Deploy
