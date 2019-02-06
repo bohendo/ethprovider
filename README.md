@@ -1,23 +1,27 @@
-## Ethereum providers
+# Ethereum provider
 
 ## Requirements
 
-The machine on which you'll run any of these deploy scripts needs to have docker installed (and that's it!)
+`make` and `docker`
 
-## Usage
+## Usage: the essentials
 
-To deploy a geth node: `bash deploy-ethprovider.sh geth`
+**Build:** `make push` will build everything locally and push the resulting docker images to dockerhub (or you can replace the registry variable at the top of Makefile to push the images somewhere else)
 
-To deploy a parity node: `bash deploy-ethprovider.sh parity`
+**Deploy:** `make deploy` will pull the necessary docker images from the registry (dockerhub by default) and deploy them. This will deploy an ethprovider (one of geth or parity) behind an nginx proxy that'll set-up an https connection and log rpc requests. If an ethprovider is already deployed, it will stop the current deployment and redeploy a new one.
 
-To deploy a ganache node: `bash launch-testnet.sh`
+(There is a variable at the top of `ops/deploy.sh` that specifies which client to deploy (geth or parity), it's usually set to parity.)
 
-## Customization
+`make stop` will stop both the proxy and provider.
 
-These scripts are each very simple, don't be afraid to dig in and tinker with them until they fit your use case.
+## Etc
 
-The deploy script contains an embedded Dockerfile that simply installs the client of interest, it's unlikely that you'd need to change anything there.
+`make simple` will download the parity & geth docker images and configure them appropriately.
 
-It also contains a `docker service create` command at the end which utilizes both docker-specific options (eg mounting volumes) and provider-specific options (eg setting data directories & api interfaces).
+`make manual` will download both client's source code and compile/build them according to their docker files: `modules/**/manual.dockerfile`
 
-The most commonly changed config options are at the top. Customize the options passed to `docker service create` to your heart's content. Then run the deploy script and you're good to go.
+(There is a variable at the top of the Makefile that specifies the default mode (manual or simple) that's used during `make push`, it's usually set to manual.)
+
+`bash ops/logs.sh proxy` to view the proxy's logs.
+
+`bash ops/logs.sh provider` to view the ethprovider's logs.
