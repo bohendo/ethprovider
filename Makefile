@@ -49,16 +49,16 @@ push-proxy: proxy
 	docker push $(proxy_image)
 
 push-prebuilt: prebuilt
-	docker tag $(project)_geth:s$(geth_version) $(registry)/$(project)_geth:s$(geth_version)
-	docker tag $(project)_parity:s$(parity_version) $(registry)/$(project)_parity:s$(parity_version)
-	docker push $(registry)/$(project)_geth:s$(geth_version)
-	docker push $(registry)/$(project)_parity:s$(parity_version)
+	docker tag $(project)_geth:$(geth_version)-prebuilt $(registry)/$(project)_geth:$(geth_version)-prebuilt
+	docker tag $(project)_parity:$(parity_version)-prebuilt $(registry)/$(project)_parity:$(parity_version)-prebuilt
+	docker push $(registry)/$(project)_geth:$(geth_version)-prebuilt
+	docker push $(registry)/$(project)_parity:$(parity_version)-prebuilt
 
 push-manual: manual
-	docker tag $(project)_geth:s$(geth_version) $(registry)/$(project)_geth:s$(geth_version)
-	docker tag $(project)_parity:s$(parity_version) $(registry)/$(project)_parity:s$(parity_version)
-	docker push $(registry)/$(project)_geth:s$(geth_version)
-	docker push $(registry)/$(project)_parity:s$(parity_version)
+	docker tag $(project)_geth:$(geth_version) $(registry)/$(project)_geth:$(geth_version)
+	docker tag $(project)_parity:$(parity_version) $(registry)/$(project)_parity:$(parity_version)
+	docker push $(registry)/$(project)_geth:$(geth_version)
+	docker push $(registry)/$(project)_parity:$(parity_version)
 
 deploy:
 	bash ops/stop.sh

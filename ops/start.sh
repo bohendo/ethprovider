@@ -5,13 +5,13 @@ set -e
 ## Config
 
 ETHPROVIDER_CLIENT="${ETHPROVIDER_IMAGE_TYPE:-geth}"
-ETHPROVIDER_BUILD_TYPE="${ETHPROVIDER_BUILD_TYPE:-m}"
+ETHPROVIDER_BUILD_TYPE="${ETHPROVIDER_BUILD_TYPE:-}"
 ETHPROVIDER_EMAIL="${ETHPROVIDER_EMAIL:-noreply@gmail.com}"
 ETHPROVIDER_DOMAINNAME="${ETHPROVIDER_DOMAINNAME:-localhost}"
 
 proxy_version="`grep proxy versions | awk -F '=' '{print $2}'`"
-geth_version="$ETHPROVIDER_BUILD_TYPE`grep geth versions | awk -F '=' '{print $2}'`"
-parity_version="$ETHPROVIDER_BUILD_TYPE`grep parity versions | awk -F '=' '{print $2}'`"
+geth_version="`grep geth versions | awk -F '=' '{print $2}'`$ETHPROVIDER_BUILD_TYPE"
+parity_version="`grep parity versions | awk -F '=' '{print $2}'`$ETHPROVIDER_BUILD_TYPE"
 
 name="`whoami`"
 cache="4096"
