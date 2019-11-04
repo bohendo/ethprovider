@@ -1,6 +1,3 @@
-# mode can be simple or manual
-mode=manual
-tag=$(shell echo $(mode) | head -c1)
 
 project=ethprovider
 registry=docker.io/$(shell whoami)
@@ -10,7 +7,6 @@ geth_version=$(shell grep geth versions | awk -F '=' '{print $$2}')
 parity_version=$(shell grep parity versions | awk -F '=' '{print $$2}')
 
 proxy_image=$(registry)/$(project)_proxy:$(proxy_version)
-geth_image=$(registry)/$(project)_geth:$(geth_version)
 parity_image=$(registry)/$(project)_parity:$(parity_version)
 
 # Get absolute paths to important dirs
@@ -33,13 +29,13 @@ log_finish=@echo "[Makefile] => Finished building $@ in $$((`date "+%s"` - `cat 
 # Begin Phony Rules
 .PHONY: default all simple manual stop clean deploy deploy-live proxy-logs provider-logs
 
-debug:
-	echo $(tag)
-
-default: proxy $(mode)
+default: proxy simple
 all: proxy simple manual
 simple: proxy geth parity
 manual: proxy geth-manual parity-manual
+
+start:
+	bash ops/start.sh
 
 stop: 
 	bash ops/stop.sh
@@ -48,13 +44,21 @@ stop:
 clean:
 	rm -rf build/*
 
-push: $(mode)
+push-proxy: proxy
 	docker tag $(project)_proxy:$(proxy_version) $(proxy_image)
-	docker tag $(project)_geth:$(tag)$(geth_version) $(geth_image)
-	docker tag $(project)_parity:$(tag)$(parity_version) $(parity_image)
 	docker push $(proxy_image)
-	docker push $(geth_image)
-	docker push $(parity_image)
+
+push-simple: simple
+	docker tag $(project)_geth:s$(geth_version) $(registry)/$(project)_geth:s$(geth_version)
+	docker tag $(project)_parity:s$(parity_version) $(registry)/$(project)_parity:s$(parity_version)
+	docker push $(registry)/$(project)_geth:s$(geth_version)
+	docker push $(registry)/$(project)_parity:s$(parity_version)
+
+push-manual: manual
+	docker tag $(project)_geth:s$(geth_version) $(registry)/$(project)_geth:s$(geth_version)
+	docker tag $(project)_parity:s$(parity_version) $(registry)/$(project)_parity:s$(parity_version)
+	docker push $(registry)/$(project)_geth:s$(geth_version)
+	docker push $(registry)/$(project)_parity:s$(parity_version)
 
 deploy:
 	bash ops/stop.sh

@@ -4,25 +4,26 @@ set -e
 ########################################
 ## Config
 
+ETHPROVIDER_CLIENT="${ETHPROVIDER_IMAGE_TYPE:-geth}"
+ETHPROVIDER_BUILD_TYPE="${ETHPROVIDER_BUILD_TYPE:-m}"
+ETHPROVIDER_EMAIL="${ETHPROVIDER_EMAIL:-noreply@gmail.com}"
+ETHPROVIDER_DOMAINNAME="${ETHPROVIDER_DOMAINNAME:-localhost}"
+
 proxy_version="`grep proxy versions | awk -F '=' '{print $2}'`"
-geth_version="`grep geth versions | awk -F '=' '{print $2}'`"
-parity_version="`grep parity versions | awk -F '=' '{print $2}'`"
+geth_version="$ETHPROVIDER_BUILD_TYPE`grep geth versions | awk -F '=' '{print $2}'`"
+parity_version="$ETHPROVIDER_BUILD_TYPE`grep parity versions | awk -F '=' '{print $2}'`"
 
 name="`whoami`"
 cache="4096"
 data_dir="/root/eth"
 
-provider="parity"
-email="$EMAIL"; [[ -n "$EMAIL" ]] || email="noreply@gmail.com";
-domain="$DOMAINNAME"; [[ -n "$DOMAINNAME" ]] || domain="localhost"
-
 project="ethprovider"
 registry="docker.io/`whoami`"
 
 proxy_image="$registry/${project}_proxy:$proxy_version"
-if [[ "$provider" == "geth" ]]
-then provider_image="$registry/${project}_$provider:$geth_version"
-else provider_image="$registry/${project}_$provider:$parity_version"
+if [[ "$ETHPROVIDER_CLIENT" == "geth" ]]
+then provider_image="$registry/${project}_$ETHPROVIDER_CLIENT:$geth_version"
+else provider_image="$registry/${project}_$ETHPROVIDER_CLIENT:$parity_version"
 fi
 
 ########################################
@@ -37,7 +38,7 @@ version: '3.4'
 
 volumes:
   certs:
-  ${provider}_data:
+  ${ETHPROVIDER_CLIENT}_data:
     external: true
 
 services:
@@ -47,8 +48,8 @@ services:
     depends_on:
       - provider
     environment:
-      DOMAINNAME: $DOMAINNAME
-      EMAIL: $EMAIL
+      DOMAINNAME: $ETHPROVIDER_DOMAINNAME
+      EMAIL: $ETHPROVIDER_EMAIL
     logging:
       driver: "json-file"
       options:
@@ -74,7 +75,7 @@ services:
     ports:
       - "30303:30303"
     volumes:
-      - ${provider}_data:$data_dir
+      - ${ETHPROVIDER_CLIENT}_data:$data_dir
 EOF
 
 docker stack deploy --compose-file $tmp/docker-compose.yml eth
