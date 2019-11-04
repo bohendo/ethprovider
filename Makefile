@@ -27,11 +27,11 @@ log_start=@echo "=============";echo "[Makefile] => Start building $@"; date "+%
 log_finish=@echo "[Makefile] => Finished building $@ in $$((`date "+%s"` - `cat build/.timestamp`)) seconds";echo "=============";echo
 
 # Begin Phony Rules
-.PHONY: default all simple manual stop clean deploy deploy-live proxy-logs provider-logs
+.PHONY: default all prebuilt manual stop clean deploy deploy-live proxy-logs provider-logs
 
-default: proxy simple
-all: proxy simple manual
-simple: proxy geth parity
+default: proxy prebuilt
+all: proxy prebuilt manual
+prebuilt: proxy geth-prebuilt parity-prebuilt
 manual: proxy geth-manual parity-manual
 
 start:
@@ -48,7 +48,7 @@ push-proxy: proxy
 	docker tag $(project)_proxy:$(proxy_version) $(proxy_image)
 	docker push $(proxy_image)
 
-push-simple: simple
+push-prebuilt: prebuilt
 	docker tag $(project)_geth:s$(geth_version) $(registry)/$(project)_geth:s$(geth_version)
 	docker tag $(project)_parity:s$(parity_version) $(registry)/$(project)_parity:s$(parity_version)
 	docker push $(registry)/$(project)_geth:s$(geth_version)
@@ -76,9 +76,9 @@ geth-manual: $(geth)/manual.Dockerfile $(geth)/entry.sh
 	docker build --file $(geth)/manual.Dockerfile --build-arg VERSION=$(geth_version) --tag $(project)_geth:m$(geth_version) $(geth)
 	$(log_finish) && touch build/geth-manual
 
-geth: $(geth)/simple.Dockerfile $(geth)/entry.sh
+geth-prebuilt: $(geth)/prebuilt.Dockerfile $(geth)/entry.sh
 	$(log_start)
-	docker build --file $(geth)/simple.Dockerfile --build-arg VERSION=$(geth_version) --tag $(project)_geth:s$(geth_version) $(geth)
+	docker build --file $(geth)/prebuilt.Dockerfile --build-arg VERSION=$(geth_version) --tag $(project)_geth:s$(geth_version) $(geth)
 	$(log_finish) && touch build/geth
 
 parity-manual: $(parity)/manual.Dockerfile $(parity)/entry.sh
@@ -86,7 +86,7 @@ parity-manual: $(parity)/manual.Dockerfile $(parity)/entry.sh
 	docker build --file $(parity)/manual.Dockerfile --build-arg VERSION=$(parity_version) --tag $(project)_parity:m$(parity_version) $(parity)
 	$(log_finish) && touch build/parity-manual
 
-parity: $(parity)/simple.Dockerfile $(parity)/entry.sh
+parity-prebuilt: $(parity)/prebuilt.Dockerfile $(parity)/entry.sh
 	$(log_start)
-	docker build --file $(parity)/simple.Dockerfile --build-arg VERSION=$(parity_version) --tag $(project)_parity:s$(parity_version) $(parity)
+	docker build --file $(parity)/prebuilt.Dockerfile --build-arg VERSION=$(parity_version) --tag $(project)_parity:s$(parity_version) $(parity)
 	$(log_finish) && touch build/parity
