@@ -5,5 +5,5 @@ url=$ETH_PROVIDER
 method=$1 && [[ -n "$method" ]] || method=eth_syncing
 params=$2 && [[ -n "$params" ]] || params='[]'
 
-echo curl --insecure -H "Content-Type: application/json" -X POST --data '{"id":31415,"jsonrpc":"2.0","method":"'$method'","params":'$params'}' $url
-curl --insecure -H "Content-Type: application/json" -X POST --data '{"id":31415,"jsonrpc":"2.0","method":"'$method'","params":'$params'}' $url
+echo curl --insecure -H "Content-Type: application/json" -X POST --data '{"id":31415,"jsonrpc":"2.0","method":"'$method'","params":'"$params"'}' "$url"
+curl --insecure -H "Content-Type: application/json" -X POST --data '{"id":31415,"jsonrpc":"2.0","method":"'$method'","params":'"$params"'}' "$url"

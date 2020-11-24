@@ -9,15 +9,15 @@ ETHPROVIDER_BUILD_TYPE="${ETHPROVIDER_BUILD_TYPE:-}"
 ETHPROVIDER_EMAIL="${ETHPROVIDER_EMAIL:-noreply@gmail.com}"
 ETHPROVIDER_DOMAINNAME="${ETHPROVIDER_DOMAINNAME:-localhost}"
 
-proxy_version="`grep proxy versions | awk -F '=' '{print $2}'`"
-geth_version="`grep geth versions | awk -F '=' '{print $2}'`$ETHPROVIDER_BUILD_TYPE"
+proxy_version="$(grep proxy versions | awk -F '=' '{print $2}')"
+geth_version="$(grep geth versions | awk -F '=' '{print $2}')$ETHPROVIDER_BUILD_TYPE"
 
-name="`whoami`"
+name="$(whoami)"
 cache="4096"
 data_dir="/root/eth"
 
 project="ethprovider"
-registry="docker.io/`whoami`"
+registry="docker.io/$(whoami)"
 
 proxy_image="$registry/${project}_proxy:$proxy_version"
 provider_image="$registry/${project}_$ETHPROVIDER_CLIENT:$geth_version"
