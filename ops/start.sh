@@ -4,37 +4,24 @@ set -e
 ########################################
 ## Config
 
-ETHPROVIDER_CLIENT="geth"
-ETHPROVIDER_BUILD_TYPE="${ETHPROVIDER_BUILD_TYPE:-}"
-ETHPROVIDER_EMAIL="${ETHPROVIDER_EMAIL:-noreply@gmail.com}"
 ETHPROVIDER_DOMAINNAME="${ETHPROVIDER_DOMAINNAME:-localhost}"
-
-proxy_version="$(grep proxy versions | awk -F '=' '{print $2}')"
-geth_version="$(grep geth versions | awk -F '=' '{print $2}')$ETHPROVIDER_BUILD_TYPE"
-
-name="$(whoami)"
-cache="4096"
-data_dir="/root/eth"
+ETHPROVIDER_DATADIR="${ETHPROVIDER_DATADIR:-/root/eth}"
 
 project="ethprovider"
-registry="docker.io/$(whoami)"
-
-proxy_image="$registry/${project}_proxy:$proxy_version"
-provider_image="$registry/${project}_$ETHPROVIDER_CLIENT:$geth_version"
+proxy_image="${project}_proxy:$(grep proxy versions | awk -F '=' '{print $2}')"
+provider_image="${project}_geth:$(grep geth versions | awk -F '=' '{print $2}')"
 
 ########################################
 ## Deploy
 
 echo "Deploying images $proxy_image and $provider_image"
 
-tmp=/tmp/ethprovider
-mkdir -p $tmp
-cat - > $tmp/docker-compose.yml <<EOF
+cat -> docker-compose.yml <<EOF
 version: '3.4'
 
 volumes:
   certs:
-  ${ETHPROVIDER_CLIENT}_data:
+  geth_data:
     external: true
 
 services:
@@ -60,9 +47,9 @@ services:
   provider:
     image: $provider_image
     environment:
-      NAME: $name
-      DATA_DIR: $data_dir
-      CACHE: $cache
+      NAME: $(whoami)
+      DATA_DIR: $ETHPROVIDER_DATADIR
+      CACHE: 4096
     logging:
       driver: "json-file"
       options:
@@ -71,7 +58,7 @@ services:
     ports:
       - "30303:30303"
     volumes:
-      - ${ETHPROVIDER_CLIENT}_data:$data_dir
+      - geth_data:$ETHPROVIDER_DATADIR
 EOF
 
-docker stack deploy --compose-file $tmp/docker-compose.yml eth
+docker stack deploy --compose-file docker-compose.yml eth
