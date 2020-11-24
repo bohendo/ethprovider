@@ -4,6 +4,9 @@ set -e
 ########################################
 ## Config
 
+# shellcheck disable=SC1091
+if [[ -f ".env" ]]; then source ".env"; fi
+
 ETHPROVIDER_DOMAINNAME="${ETHPROVIDER_DOMAINNAME:-localhost}"
 ETHPROVIDER_DATADIR="${ETHPROVIDER_DATADIR:-/root/eth}"
 
