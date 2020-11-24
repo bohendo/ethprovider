@@ -24,12 +24,10 @@ log_start=@echo "=============";echo "[Makefile] => Start building $@"; date "+%
 log_finish=@echo "[Makefile] => Finished building $@ in $$((`date "+%s"` - `cat build/.timestamp`)) seconds";echo "=============";echo
 
 # Begin Phony Rules
-.PHONY: default all prebuilt manual stop clean deploy deploy-live proxy-logs provider-logs
+.PHONY: default all stop clean deploy deploy-live proxy-logs provider-logs
 
-default: proxy prebuilt
-all: proxy prebuilt manual
-prebuilt: proxy geth-prebuilt
-manual: proxy geth-manual
+default: all
+all: proxy geth
 
 start:
 	bash ops/start.sh
@@ -41,21 +39,11 @@ stop:
 clean:
 	rm -rf build/*
 
-push-proxy: proxy
-	docker tag $(project)_proxy:$(proxy_version) $(proxy_image)
-	docker push $(proxy_image)
-
-push-prebuilt: prebuilt
-	docker tag $(project)_geth:$(geth_version)-prebuilt $(registry)/$(project)_geth:$(geth_version)-prebuilt
-	docker push $(registry)/$(project)_geth:$(geth_version)-prebuilt
-
-push-manual: manual
+push: proxy geth
 	docker tag $(project)_geth:$(geth_version) $(registry)/$(project)_geth:$(geth_version)
 	docker push $(registry)/$(project)_geth:$(geth_version)
-
-deploy:
-	bash ops/stop.sh
-	bash ops/deploy.sh
+	docker tag $(project)_proxy:$(proxy_version) $(proxy_image)
+	docker push $(proxy_image)
 
 # Begin Real Rules
 
@@ -64,12 +52,7 @@ proxy: $(shell find $(proxy) $(find_options))
 	docker build --file $(proxy)/Dockerfile --tag $(project)_proxy:$(proxy_version) $(proxy)
 	$(log_finish) && touch build/proxy
 
-geth-manual: $(geth)/manual.Dockerfile $(geth)/entry.sh
+geth: $(geth)/Dockerfile $(geth)/entry.sh
 	$(log_start)
-	docker build --file $(geth)/manual.Dockerfile --build-arg VERSION=$(geth_version) --tag $(project)_geth:m$(geth_version) $(geth)
-	$(log_finish) && touch build/geth-manual
-
-geth-prebuilt: $(geth)/prebuilt.Dockerfile $(geth)/entry.sh
-	$(log_start)
-	docker build --file $(geth)/prebuilt.Dockerfile --build-arg VERSION=$(geth_version) --tag $(project)_geth:s$(geth_version) $(geth)
+	docker build --file $(geth)/Dockerfile --build-arg VERSION=$(geth_version) --tag $(project)_geth:m$(geth_version) $(geth)
 	$(log_finish) && touch build/geth
