@@ -7,8 +7,8 @@ echo "domain=$domain email=$email"
 
 # Wait for downstream services to wake up
 echo "waiting for provider:8545 and provider:8546"
-bash wait_for.sh -t 60 provider:8545
-bash wait_for.sh -t 60 provider:8546
+bash wait-for.sh -t 60 provider:8545
+bash wait-for.sh -t 60 provider:8546
 
 # Provider needs more time to wake up, even after above ports are listening
 sleep 10

@@ -8,8 +8,10 @@ set -e
 if [[ -f ".env" ]]; then source ".env"; fi
 
 ETHPROVIDER_DOMAINNAME="${ETHPROVIDER_DOMAINNAME:-localhost}"
-ETHPROVIDER_DATADIR="${ETHPROVIDER_DATADIR:-/root/eth}"
+ETHPROVIDER_DATADIR="${ETHPROVIDER_DATADIR:-/root/geth}"
 ETHPROVIDER_NAME="${ETHPROVIDER_NAME:-$(whoami)}"
+
+mkdir -p "$ETHPROVIDER_DATADIR"
 
 project="ethprovider"
 proxy_image="${project}_proxy:$(grep proxy versions | awk -F '=' '{print $2}')"
