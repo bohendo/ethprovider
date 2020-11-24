@@ -4,15 +4,12 @@ registry=docker.io/$(shell whoami)
 
 proxy_version=$(shell grep proxy versions | awk -F '=' '{print $$2}')
 geth_version=$(shell grep geth versions | awk -F '=' '{print $$2}')
-parity_version=$(shell grep parity versions | awk -F '=' '{print $$2}')
 
 proxy_image=$(registry)/$(project)_proxy:$(proxy_version)
-parity_image=$(registry)/$(project)_parity:$(parity_version)
 
 # Get absolute paths to important dirs
 cwd=$(shell pwd)
 geth=$(cwd)/modules/geth
-parity=$(cwd)/modules/parity
 proxy=$(cwd)/modules/proxy
 
 # Specify make-specific variables (VPATH = prerequisite search path)
@@ -31,8 +28,8 @@ log_finish=@echo "[Makefile] => Finished building $@ in $$((`date "+%s"` - `cat 
 
 default: proxy prebuilt
 all: proxy prebuilt manual
-prebuilt: proxy geth-prebuilt parity-prebuilt
-manual: proxy geth-manual parity-manual
+prebuilt: proxy geth-prebuilt
+manual: proxy geth-manual
 
 start:
 	bash ops/start.sh
@@ -50,15 +47,11 @@ push-proxy: proxy
 
 push-prebuilt: prebuilt
 	docker tag $(project)_geth:$(geth_version)-prebuilt $(registry)/$(project)_geth:$(geth_version)-prebuilt
-	docker tag $(project)_parity:$(parity_version)-prebuilt $(registry)/$(project)_parity:$(parity_version)-prebuilt
 	docker push $(registry)/$(project)_geth:$(geth_version)-prebuilt
-	docker push $(registry)/$(project)_parity:$(parity_version)-prebuilt
 
 push-manual: manual
 	docker tag $(project)_geth:$(geth_version) $(registry)/$(project)_geth:$(geth_version)
-	docker tag $(project)_parity:$(parity_version) $(registry)/$(project)_parity:$(parity_version)
 	docker push $(registry)/$(project)_geth:$(geth_version)
-	docker push $(registry)/$(project)_parity:$(parity_version)
 
 deploy:
 	bash ops/stop.sh
@@ -80,13 +73,3 @@ geth-prebuilt: $(geth)/prebuilt.Dockerfile $(geth)/entry.sh
 	$(log_start)
 	docker build --file $(geth)/prebuilt.Dockerfile --build-arg VERSION=$(geth_version) --tag $(project)_geth:s$(geth_version) $(geth)
 	$(log_finish) && touch build/geth
-
-parity-manual: $(parity)/manual.Dockerfile $(parity)/entry.sh
-	$(log_start)
-	docker build --file $(parity)/manual.Dockerfile --build-arg VERSION=$(parity_version) --tag $(project)_parity:m$(parity_version) $(parity)
-	$(log_finish) && touch build/parity-manual
-
-parity-prebuilt: $(parity)/prebuilt.Dockerfile $(parity)/entry.sh
-	$(log_start)
-	docker build --file $(parity)/prebuilt.Dockerfile --build-arg VERSION=$(parity_version) --tag $(project)_parity:s$(parity_version) $(parity)
-	$(log_finish) && touch build/parity

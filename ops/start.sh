@@ -4,14 +4,13 @@ set -e
 ########################################
 ## Config
 
-ETHPROVIDER_CLIENT="${ETHPROVIDER_IMAGE_TYPE:-geth}"
+ETHPROVIDER_CLIENT="geth"
 ETHPROVIDER_BUILD_TYPE="${ETHPROVIDER_BUILD_TYPE:-}"
 ETHPROVIDER_EMAIL="${ETHPROVIDER_EMAIL:-noreply@gmail.com}"
 ETHPROVIDER_DOMAINNAME="${ETHPROVIDER_DOMAINNAME:-localhost}"
 
 proxy_version="`grep proxy versions | awk -F '=' '{print $2}'`"
 geth_version="`grep geth versions | awk -F '=' '{print $2}'`$ETHPROVIDER_BUILD_TYPE"
-parity_version="`grep parity versions | awk -F '=' '{print $2}'`$ETHPROVIDER_BUILD_TYPE"
 
 name="`whoami`"
 cache="4096"
@@ -21,10 +20,7 @@ project="ethprovider"
 registry="docker.io/`whoami`"
 
 proxy_image="$registry/${project}_proxy:$proxy_version"
-if [[ "$ETHPROVIDER_CLIENT" == "geth" ]]
-then provider_image="$registry/${project}_$ETHPROVIDER_CLIENT:$geth_version"
-else provider_image="$registry/${project}_$ETHPROVIDER_CLIENT:$parity_version"
-fi
+provider_image="$registry/${project}_$ETHPROVIDER_CLIENT:$geth_version"
 
 ########################################
 ## Deploy

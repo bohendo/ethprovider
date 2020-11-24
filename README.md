@@ -8,15 +8,13 @@
 
 **Build:** `make push` will build everything locally and push the resulting docker images to dockerhub (or you can replace the registry variable at the top of Makefile to push the images somewhere else)
 
-**Deploy:** `make deploy` will pull the necessary docker images from the registry (dockerhub by default) and deploy them. This will deploy an ethprovider (one of geth or parity) behind an nginx proxy that'll set-up an https connection and log rpc requests. If an ethprovider is already deployed, it will stop the current deployment and redeploy a new one.
-
-(There is a variable at the top of `ops/deploy.sh` that specifies which client to deploy (geth or parity), it's usually set to parity.)
+**Deploy:** `make deploy` will pull the necessary docker images from the registry (dockerhub by default) and deploy them. This will deploy an ethprovider (geth) behind an nginx proxy that'll set-up an https connection and log rpc requests. If an ethprovider is already deployed, it will stop the current deployment and redeploy a new one.
 
 `make stop` will stop both the proxy and provider.
 
 ## Etc
 
-`make simple` will download the parity & geth docker images and configure them appropriately.
+`make simple` will download the geth docker image and configure them appropriately.
 
 `make manual` will download both client's source code and compile/build them according to their docker files: `modules/**/manual.dockerfile`
 
