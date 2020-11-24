@@ -9,6 +9,7 @@ if [[ -f ".env" ]]; then source ".env"; fi
 
 ETHPROVIDER_DOMAINNAME="${ETHPROVIDER_DOMAINNAME:-localhost}"
 ETHPROVIDER_DATADIR="${ETHPROVIDER_DATADIR:-/root/eth}"
+ETHPROVIDER_NAME="${ETHPROVIDER_NAME:-$(whoami)}"
 
 project="ethprovider"
 proxy_image="${project}_proxy:$(grep proxy versions | awk -F '=' '{print $2}')"
@@ -24,8 +25,6 @@ version: '3.4'
 
 volumes:
   certs:
-  geth_data:
-    external: true
 
 services:
 
@@ -35,7 +34,6 @@ services:
       - provider
     environment:
       DOMAINNAME: $ETHPROVIDER_DOMAINNAME
-      EMAIL: $ETHPROVIDER_EMAIL
     logging:
       driver: "json-file"
       options:
@@ -50,9 +48,8 @@ services:
   provider:
     image: $provider_image
     environment:
-      NAME: $(whoami)
+      IDENTITY: $ETHPROVIDER_NAME
       DATA_DIR: $ETHPROVIDER_DATADIR
-      CACHE: 4096
     logging:
       driver: "json-file"
       options:
@@ -61,7 +58,7 @@ services:
     ports:
       - "30303:30303"
     volumes:
-      - geth_data:$ETHPROVIDER_DATADIR
+      - $ETHPROVIDER_DATADIR:$ETHPROVIDER_DATADIR
 EOF
 
 docker stack deploy --compose-file docker-compose.yml eth

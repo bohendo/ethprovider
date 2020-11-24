@@ -1,16 +1,15 @@
 #!/bin/sh
 
-name="$NAME"; [ -n "$name" ] || name="`whoami`"
-data_dir="$DATA_DIR"; [ -n "$data_dir" ] || data_dir="/root/eth"
-cache="$CACHE"; [ -n "$cache" ] || cache="2048"
+identity="${IDENTITY:-$(whoami)}"
+data_dir="${DATA_DIR:-/data/geth}"
 
-echo "Starting `which geth` in env:"
-echo "name=$name data_dir=$data_dir cache=$cache"
+echo "Starting $(which geth) in env:"
+echo "identity=$identity data_dir=$data_dir"
 
 exec geth \
-  --identity=$name \
-  --datadir=$data_dir \
-  --cache=$cache \
+  --identity="$identity" \
+  --datadir="$data_dir" \
+  --cache=4096 \
   --lightserv=50 \
   --nousb \
   --ipcdisable \
