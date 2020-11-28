@@ -11,7 +11,7 @@ exec geth \
   --identity="$identity" \
   --nousb \
   --syncmode=fast \
-  --light.serv=50 \
+  --light.serve=50 \
   --cache=4096 \
   --ipcdisable \
   --http \
