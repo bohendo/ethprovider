@@ -7,21 +7,21 @@ echo "Starting $(which geth) in env:"
 echo "identity=$identity data_dir=$data_dir"
 
 exec geth \
-  --identity="$identity" \
   --datadir="$data_dir" \
-  --cache=4096 \
-  --lightserv=50 \
+  --identity="$identity" \
   --nousb \
+  --syncmode=fast \
+  --light.serv=50 \
+  --cache=4096 \
   --ipcdisable \
-  --rpc \
-  --rpcaddr=0.0.0.0 \
-  --rpcport=8545 \
-  --rpcapi=safe \
-  --rpccorsdomain=* \
-  --rpcvhosts=* \
+  --http \
+  --http.addr=0.0.0.0 \
+  --http.port=8545 \
+  --http.api=eth \
+  --http.corsdomain=* \
+  --http.vhosts=* \
   --ws \
-  --wsaddr=0.0.0.0 \
-  --wsport=8546 \
-  --wsapi=safe \
-  --wsorigins=* \
-  --shh
+  --ws.addr=0.0.0.0 \
+  --ws.port=8546 \
+  --ws.api=eth \
+  --ws.origins=*
