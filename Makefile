@@ -28,7 +28,7 @@ log_finish=@echo $$((`date "+%s"` - `cat $(startTime)`)) > $(totalTime); rm $(st
 .PHONY: default all stop clean deploy deploy-live proxy-logs provider-logs
 
 default: all
-all: proxy geth lighthouse
+all: proxy geth
 
 start:
 	bash ops/start.sh
