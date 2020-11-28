@@ -15,12 +15,13 @@ mkdir -p "$ETHPROVIDER_DATADIR"
 
 project="ethprovider"
 proxy_image="${project}_proxy:$(grep proxy versions | awk -F '=' '{print $2}')"
-provider_image="${project}_geth:$(grep geth versions | awk -F '=' '{print $2}')"
+geth_image="${project}_geth:$(grep geth versions | awk -F '=' '{print $2}')"
+lighthouse_image="sigp/lighthouse:v$(grep lighthouse versions | awk -F '=' '{print $2}')"
 
 ########################################
 ## Deploy
 
-echo "Deploying images $proxy_image and $provider_image"
+echo "Deploying images $proxy_image and $geth_image"
 
 cat -> docker-compose.yml <<EOF
 version: '3.4'
@@ -32,12 +33,10 @@ services:
 
   proxy:
     image: $proxy_image
-    depends_on:
-      - provider
     environment:
       ETHPROVIDER_DOMAINNAME: '$ETHPROVIDER_DOMAINNAME'
-      ETHPROVIDER_GETH_HTTP: 'provider:8545'
-      ETHPROVIDER_GETH_WS: 'provider:8546'
+      ETHPROVIDER_GETH_HTTP: 'geth:8545'
+      ETHPROVIDER_GETH_WS: 'geth:8546'
     logging:
       driver: "json-file"
       options:
@@ -49,8 +48,8 @@ services:
     volumes:
       - certs:/etc/letsencrypt
 
-  provider:
-    image: $provider_image
+  geth:
+    image: $geth_image
     environment:
       IDENTITY: $ETHPROVIDER_NAME
       DATA_DIR: $ETHPROVIDER_DATADIR
@@ -63,6 +62,17 @@ services:
       - "30303:30303"
     volumes:
       - $ETHPROVIDER_DATADIR:$ETHPROVIDER_DATADIR
+
+  lighthouse:
+    image: $lighthouse_image
+    logging:
+      driver: "json-file"
+      options:
+          max-file: 10
+          max-size: 10m
+    ports:
+      - "9000:9000"
+
 EOF
 
 docker stack deploy --compose-file docker-compose.yml eth
