@@ -63,6 +63,7 @@ services:
 
   $ETH_2_CLIENT:
     image: $eth2_image
+    command: ["lighthouse", "beacon", "--http", "--http-address=0.0.0.0"]
     logging:
       driver: 'json-file'
       options:
