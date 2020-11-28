@@ -6,7 +6,8 @@ export ETHPROVIDER_EMAIL="${ETHPROVIDER_EMAIL:-noreply@gmail.com}"
 echo "Proxy container launched in env:"
 echo "ETHPROVIDER_DOMAINNAME=$ETHPROVIDER_DOMAINNAME"
 echo "ETHPROVIDER_EMAIL=$ETHPROVIDER_EMAIL"
-echo "ETHPROVIDER_GETH_URL=$ETHPROVIDER_GETH_URL"
+echo "ETHPROVIDER_GETH_HTTP=$ETHPROVIDER_GETH_HTTP"
+echo "ETHPROVIDER_GETH_WS=$ETHPROVIDER_GETH_WS"
 
 # Provide a message indicating that we're still waiting for everything to wake up
 function loading_msg {
@@ -21,9 +22,9 @@ loading_pid="$!"
 # Wait for downstream services to wake up
 # Define service hostnames & ports we depend on
 
-echo "waiting for $ETHPROVIDER_GETH_URL..."
-wait-for -q -t 60 "$ETHPROVIDER_GETH_URL" 2>&1 | sed '/nc: bad address/d'
-while ! curl -s "$ETHPROVIDER_GETH_URL" > /dev/null
+echo "waiting for $ETHPROVIDER_GETH_HTTP..."
+wait-for -q -t 60 "$ETHPROVIDER_GETH_HTTP" 2>&1 | sed '/nc: bad address/d'
+while ! curl -s "$ETHPROVIDER_GETH_HTTP" > /dev/null
 do sleep 2
 done
 

@@ -36,7 +36,8 @@ services:
       - provider
     environment:
       ETHPROVIDER_DOMAINNAME: '$ETHPROVIDER_DOMAINNAME'
-      ETHPROVIDER_GETH_URL: 'provider:8545'
+      ETHPROVIDER_GETH_HTTP: 'provider:8545'
+      ETHPROVIDER_GETH_WS: 'provider:8546'
     logging:
       driver: "json-file"
       options:
