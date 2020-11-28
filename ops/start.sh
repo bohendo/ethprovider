@@ -35,7 +35,8 @@ services:
     depends_on:
       - provider
     environment:
-      DOMAINNAME: $ETHPROVIDER_DOMAINNAME
+      ETHPROVIDER_DOMAINNAME: '$ETHPROVIDER_DOMAINNAME'
+      ETHPROVIDER_GETH_URL: 'http://provider:8545'
     logging:
       driver: "json-file"
       options:
