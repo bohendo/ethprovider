@@ -3,6 +3,7 @@ project=ethprovider
 
 proxy_version=$(shell grep proxy versions | awk -F '=' '{print $$2}')
 geth_version=$(shell grep geth versions | awk -F '=' '{print $$2}')
+prysma_version=$(shell grep prysma versions | awk -F '=' '{print $$2}')
 
 # Get absolute paths to important dirs
 cwd=$(shell pwd)
@@ -24,7 +25,7 @@ log_finish=@echo "[Makefile] => Finished building $@ in $$((`date "+%s"` - `cat 
 .PHONY: default all stop clean deploy deploy-live proxy-logs provider-logs
 
 default: all
-all: proxy geth
+all: proxy geth prysma
 
 start:
 	bash ops/start.sh
@@ -49,4 +50,9 @@ proxy: $(shell find $(proxy) $(find_options))
 geth: $(geth)/Dockerfile $(geth)/entry.sh
 	$(log_start)
 	docker build --file $(geth)/Dockerfile --build-arg VERSION=$(geth_version) --tag $(project)_geth:$(geth_version) $(geth)
+	$(log_finish) && touch build/geth
+
+prysma: $(shell find modules/prysma $(find_options))
+	$(log_start)
+	docker build --file modules/prysma/Dockerfile --build-arg VERSION=$(prysma_version) --tag $(project)_prysma:$(prysma_version) modules/prysma
 	$(log_finish) && touch build/geth
