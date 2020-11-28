@@ -1,5 +1,5 @@
 
-project=ethprovider
+project=eth
 
 proxy_version=$(shell grep proxy versions | awk -F '=' '{print $$2}')
 geth_version=$(shell grep geth versions | awk -F '=' '{print $$2}')
