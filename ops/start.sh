@@ -7,8 +7,8 @@ set -e
 # shellcheck disable=SC1091
 if [[ -f ".env" ]]; then source ".env"; fi
 
+ETHPROVIDER_DATADIR="${ETHPROVIDER_DATADIR:-/data/geth}"
 ETHPROVIDER_DOMAINNAME="${ETHPROVIDER_DOMAINNAME:-localhost}"
-ETHPROVIDER_DATADIR="${ETHPROVIDER_DATADIR:-/root/geth}"
 ETHPROVIDER_NAME="${ETHPROVIDER_NAME:-$(whoami)}"
 
 mkdir -p "$ETHPROVIDER_DATADIR"
@@ -36,7 +36,7 @@ services:
       - provider
     environment:
       ETHPROVIDER_DOMAINNAME: '$ETHPROVIDER_DOMAINNAME'
-      ETHPROVIDER_GETH_URL: 'http://provider:8545'
+      ETHPROVIDER_GETH_URL: 'provider:8545'
     logging:
       driver: "json-file"
       options:
