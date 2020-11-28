@@ -1,4 +1,5 @@
 *.swp
 .env
 .flags
+.wallet.json
 docker-compose.yml
