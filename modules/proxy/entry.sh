@@ -1,13 +1,13 @@
 #!/bin/bash
 
-export ETHPROVIDER_DOMAINNAME="${ETHPROVIDER_DOMAINNAME:-localhost}"
-export ETHPROVIDER_EMAIL="${ETHPROVIDER_EMAIL:-noreply@gmail.com}"
+export ETH_DOMAINNAME="${ETH_DOMAINNAME:-localhost}"
+export ETH_EMAIL="${ETH_EMAIL:-noreply@gmail.com}"
 
 echo "Proxy container launched in env:"
-echo "ETHPROVIDER_DOMAINNAME=$ETHPROVIDER_DOMAINNAME"
-echo "ETHPROVIDER_EMAIL=$ETHPROVIDER_EMAIL"
-echo "ETHPROVIDER_GETH_HTTP=$ETHPROVIDER_GETH_HTTP"
-echo "ETHPROVIDER_GETH_WS=$ETHPROVIDER_GETH_WS"
+echo "ETH_DOMAINNAME=$ETH_DOMAINNAME"
+echo "ETH_EMAIL=$ETH_EMAIL"
+echo "ETH_GETH_HTTP=$ETH_GETH_HTTP"
+echo "ETH_GETH_WS=$ETH_GETH_WS"
 
 # Provide a message indicating that we're still waiting for everything to wake up
 function loading_msg {
@@ -22,16 +22,16 @@ loading_pid="$!"
 # Wait for downstream services to wake up
 # Define service hostnames & ports we depend on
 
-echo "waiting for $ETHPROVIDER_GETH_HTTP..."
-wait-for -q -t 60 "$ETHPROVIDER_GETH_HTTP" 2>&1 | sed '/nc: bad address/d'
-while ! curl -s "$ETHPROVIDER_GETH_HTTP" > /dev/null
+echo "waiting for $ETH_GETH_HTTP..."
+wait-for -q -t 60 "$ETH_GETH_HTTP" 2>&1 | sed '/nc: bad address/d'
+while ! curl -s "$ETH_GETH_HTTP" > /dev/null
 do sleep 2
 done
 
 # Kill the loading message server
 kill "$loading_pid" && pkill nc
 
-if [[ -z "$ETHPROVIDER_DOMAINNAME" ]]
+if [[ -z "$ETH_DOMAINNAME" ]]
 then
   cp /etc/ssl/cert.pem ca-certs.pem
   echo "Entrypoint finished, executing haproxy in http mode..."; echo
@@ -42,11 +42,11 @@ fi
 # Setup SSL Certs
 
 letsencrypt=/etc/letsencrypt/live
-certsdir=$letsencrypt/$ETHPROVIDER_DOMAINNAME
+certsdir=$letsencrypt/$ETH_DOMAINNAME
 mkdir -p /etc/haproxy/certs
 mkdir -p /var/www/letsencrypt
 
-if [[ "$ETHPROVIDER_DOMAINNAME" == "localhost" && ! -f "$certsdir/privkey.pem" ]]
+if [[ "$ETH_DOMAINNAME" == "localhost" && ! -f "$certsdir/privkey.pem" ]]
 then
   echo "Developing locally, generating self-signed certs"
   mkdir -p "$certsdir"
@@ -55,8 +55,8 @@ fi
 
 if [[ ! -f "$certsdir/privkey.pem" ]]
 then
-  echo "Couldn't find certs for $ETHPROVIDER_DOMAINNAME, using certbot to initialize those now.."
-  certbot certonly --standalone -m "$ETHPROVIDER_EMAIL" --agree-tos --no-eff-email -d "$ETHPROVIDER_DOMAINNAME" -n
+  echo "Couldn't find certs for $ETH_DOMAINNAME, using certbot to initialize those now.."
+  certbot certonly --standalone -m "$ETH_EMAIL" --agree-tos --no-eff-email -d "$ETH_DOMAINNAME" -n
   code=$?
   if [[ "$code" -ne 0 ]]
   then
@@ -66,15 +66,15 @@ then
   fi
 fi
 
-echo "Using certs for $ETHPROVIDER_DOMAINNAME"
+echo "Using certs for $ETH_DOMAINNAME"
 
-export ETHPROVIDER_CERTBOT_PORT=31820
+export ETH_CERTBOT_PORT=31820
 
 function copycerts {
   if [[ -f $certsdir/fullchain.pem && -f $certsdir/privkey.pem ]]
-  then cat "$certsdir/fullchain.pem" "$certsdir/privkey.pem" > "$ETHPROVIDER_DOMAINNAME.pem"
+  then cat "$certsdir/fullchain.pem" "$certsdir/privkey.pem" > "$ETH_DOMAINNAME.pem"
   elif [[ -f "$certsdir-0001/fullchain.pem" && -f "$certsdir-0001/privkey.pem" ]]
-  then cat "$certsdir-0001/fullchain.pem" "$certsdir-0001/privkey.pem" > "$ETHPROVIDER_DOMAINNAME.pem"
+  then cat "$certsdir-0001/fullchain.pem" "$certsdir-0001/privkey.pem" > "$ETH_DOMAINNAME.pem"
   else
     echo "Couldn't find certs, freezing to debug"
     sleep 9999;
@@ -90,8 +90,8 @@ function renewcerts {
     echo -n "Preparing to renew certs... "
     if [[ -d "$certsdir" ]]
     then
-      echo -n "Found certs to renew for $ETHPROVIDER_DOMAINNAME... "
-      certbot renew -n --standalone --http-01-port=$ETHPROVIDER_CERTBOT_PORT
+      echo -n "Found certs to renew for $ETH_DOMAINNAME... "
+      certbot renew -n --standalone --http-01-port=$ETH_CERTBOT_PORT
       copycerts
       echo "Done!"
     fi
