@@ -38,8 +38,8 @@ services:
     image: '$proxy_image'
     environment:
       ETH_DOMAINNAME: '$ETH_DOMAINNAME'
-      ETH_1_HTTP: 'eth1:8545'
-      ETH_1_WS: 'eth1:8546'
+      ETH_1_HTTP: '$ETH_1_CLIENT:8545'
+      ETH_1_WS: '$ETH_1_CLIENT:8546'
     logging:
       driver: 'json-file'
       options:
@@ -50,7 +50,7 @@ services:
     volumes:
       - 'certs:/etc/letsencrypt'
 
-  eth1:
+  $ETH_1_CLIENT:
     image: $eth1_image
     environment:
       IDENTITY: $ETH_IDENTITY
@@ -64,7 +64,7 @@ services:
     volumes:
       - '$ETH_1_DATADIR:/root/.ethereum'
 
-  eth2:
+  $ETH_2_CLIENT:
     image: $eth2_image
     logging:
       driver: 'json-file'
