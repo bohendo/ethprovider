@@ -1,14 +1,6 @@
 #!/bin/sh
 
-identity="${IDENTITY:-$(whoami)}"
-data_dir="${DATA_DIR:-/data/geth}"
-
-echo "Starting $(which geth) in env:"
-echo "identity=$identity data_dir=$data_dir"
-
 exec geth \
-  --datadir="$data_dir" \
-  --identity="$identity" \
   --nousb \
   --syncmode=fast \
   --light.serve=50 \

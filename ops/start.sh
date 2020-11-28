@@ -52,9 +52,6 @@ services:
 
   $ETH_1_CLIENT:
     image: $eth1_image
-    environment:
-      IDENTITY: $ETH_IDENTITY
-      DATA_DIR: $ETH_1_DATADIR
     logging:
       driver: 'json-file'
       options:
