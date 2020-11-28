@@ -1,17 +1,7 @@
-FROM alpine:3.12
+FROM haproxy:2.1.3-alpine
 WORKDIR /root
 ENV HOME /root
-
-RUN apk add --update --no-cache bash certbot nginx openssl && \
-    openssl dhparam -out /etc/ssl/dhparam.pem 2048 && \
-    ln -fs /dev/stdout /var/log/nginx/access.log && \
-    ln -fs /dev/stdout /var/log/nginx/error.log
-
-COPY wait-for.sh /root/wait-for.sh
-COPY entry.sh /root/entry.sh
-COPY nginx.conf /etc/nginx/nginx.conf
-
-VOLUME /etc/letsencrypt
-EXPOSE 80 443
-
+RUN apk add --update --no-cache bash ca-certificates certbot curl iputils openssl
+RUN curl https://raw.githubusercontent.com/vishnubob/wait-for-it/ed77b63706ea721766a62ff22d3a251d8b4a6a30/wait-for-it.sh > /bin/wait-for && chmod +x /bin/wait-for
+COPY . .
 ENTRYPOINT ["bash", "/root/entry.sh"]

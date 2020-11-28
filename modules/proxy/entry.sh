@@ -1,64 +1,108 @@
 #!/bin/bash
 
-# Set default email & domain name
-email=$EMAIL; [[ -n "$email" ]] || email=noreply@example.com
-domain=$DOMAINNAME; [[ -n "$domain" ]] || domain=localhost
-echo "domain=$domain email=$email"
+export ETHPROVIDER_DOMAINNAME="${ETHPROVIDER_DOMAINNAME:-localhost}"
+export ETHPROVIDER_EMAIL="${ETHPROVIDER_EMAIL:-noreply@gmail.com}"
 
+echo "Proxy container launched in env:"
+echo "ETHPROVIDER_DOMAINNAME=$ETHPROVIDER_DOMAINNAME"
+echo "ETHPROVIDER_EMAIL=$ETHPROVIDER_EMAIL"
+echo "ETHPROVIDER_GETH_URL=$ETHPROVIDER_GETH_URL"
+
+# Provide a message indicating that we're still waiting for everything to wake up
+function loading_msg {
+  while true # unix.stackexchange.com/a/37762
+  do echo -e "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\nWaiting for proxy to wake up" | nc -lk -p 80
+  done > /dev/null
+}
+loading_msg &
+loading_pid="$!"
+
+########################################
 # Wait for downstream services to wake up
-echo "waiting for provider:8545 and provider:8546"
-bash wait-for.sh -t 60 provider:8545
-bash wait-for.sh -t 60 provider:8546
+# Define service hostnames & ports we depend on
 
-# Provider needs more time to wake up, even after above ports are listening
-sleep 10
+echo "waiting for $ETHPROVIDER_GETH_URL..."
+wait-for -q -t 60 "$ETHPROVIDER_GETH_URL" 2>&1 | sed '/nc: bad address/d'
+while ! curl -s "$ETHPROVIDER_GETH_URL" > /dev/null
+do sleep 2
+done
+
+# Kill the loading message server
+kill "$loading_pid" && pkill nc
+
+if [[ -z "$ETHPROVIDER_DOMAINNAME" ]]
+then
+  cp /etc/ssl/cert.pem ca-certs.pem
+  echo "Entrypoint finished, executing haproxy in http mode..."; echo
+  exec haproxy -db -f http.cfg
+fi
+
+########################################
+# Setup SSL Certs
 
 letsencrypt=/etc/letsencrypt/live
-devcerts=$letsencrypt/localhost
-mkdir -p $devcerts
-mkdir -p /etc/certs
+certsdir=$letsencrypt/$ETHPROVIDER_DOMAINNAME
+mkdir -p /etc/haproxy/certs
 mkdir -p /var/www/letsencrypt
 
-if [[ "$domain" == "localhost" && ! -f "$devcerts/privkey.pem" ]]
+if [[ "$ETHPROVIDER_DOMAINNAME" == "localhost" && ! -f "$certsdir/privkey.pem" ]]
 then
   echo "Developing locally, generating self-signed certs"
-  openssl req -x509 -newkey rsa:4096 -keyout $devcerts/privkey.pem -out $devcerts/fullchain.pem -days 365 -nodes -subj '/CN=localhost'
+  mkdir -p "$certsdir"
+  openssl req -x509 -newkey rsa:4096 -keyout "$certsdir/privkey.pem" -out "$certsdir/fullchain.pem" -days 365 -nodes -subj '/CN=localhost'
 fi
 
-if [[ ! -f "$letsencrypt/$domain/privkey.pem" ]]
+if [[ ! -f "$certsdir/privkey.pem" ]]
 then
-  echo "Couldn't find certs for $domain, using certbot to initialize those now.."
-  certbot certonly --standalone -m $email --agree-tos --no-eff-email -d $domain -n
-  [[ $? -eq 0 ]] || sleep 9999 # FREEZE! Don't pester eff & get throttled
+  echo "Couldn't find certs for $ETHPROVIDER_DOMAINNAME, using certbot to initialize those now.."
+  certbot certonly --standalone -m "$ETHPROVIDER_EMAIL" --agree-tos --no-eff-email -d "$ETHPROVIDER_DOMAINNAME" -n
+  code=$?
+  if [[ "$code" -ne 0 ]]
+  then
+    echo "certbot exited with code $code, freezing to debug (and so we don't get throttled)"
+    sleep 9999 # FREEZE! Don't pester eff & get throttled
+    exit 1;
+  fi
 fi
 
-echo "Using certs for $domain"
-ln -sf $letsencrypt/$domain/privkey.pem /etc/certs/privkey.pem
-ln -sf $letsencrypt/$domain/fullchain.pem /etc/certs/fullchain.pem
+echo "Using certs for $ETHPROVIDER_DOMAINNAME"
 
-# Hacky way to implement variables in the nginx.conf file
-sed -i 's/$hostname/'"$domain"'/' /etc/nginx/nginx.conf
+export ETHPROVIDER_CERTBOT_PORT=31820
+
+function copycerts {
+  if [[ -f $certsdir/fullchain.pem && -f $certsdir/privkey.pem ]]
+  then cat "$certsdir/fullchain.pem" "$certsdir/privkey.pem" > "$ETHPROVIDER_DOMAINNAME.pem"
+  elif [[ -f "$certsdir-0001/fullchain.pem" && -f "$certsdir-0001/privkey.pem" ]]
+  then cat "$certsdir-0001/fullchain.pem" "$certsdir-0001/privkey.pem" > "$ETHPROVIDER_DOMAINNAME.pem"
+  else
+    echo "Couldn't find certs, freezing to debug"
+    sleep 9999;
+    exit 1
+  fi
+}
 
 # periodically fork off & see if our certs need to be renewed
 function renewcerts {
+  sleep 3 # give proxy a sec to wake up before attempting first renewal
   while true
   do
     echo -n "Preparing to renew certs... "
-    if [[ -d "/etc/letsencrypt/live/$domain" ]]
+    if [[ -d "$certsdir" ]]
     then
-      echo -n "Found certs to renew for $domain... "
-      certbot renew --webroot -w /var/www/letsencrypt/ -n
+      echo -n "Found certs to renew for $ETHPROVIDER_DOMAINNAME... "
+      certbot renew -n --standalone --http-01-port=$ETHPROVIDER_CERTBOT_PORT
+      copycerts
       echo "Done!"
     fi
     sleep 48h
   done
 }
 
-if [[ "$domain" != "localhost" ]]
-then
-  renewcerts &
-fi
+renewcerts &
 
-sleep 3 # give renewcerts a sec to do it's first check
-echo "Entrypoint finished, executing nginx..."; echo
-exec nginx
+copycerts
+
+cp /etc/ssl/cert.pem ca-certs.pem
+
+echo "Entrypoint finished, executing haproxy in https mode..."; echo
+exec haproxy -db -f https.cfg
