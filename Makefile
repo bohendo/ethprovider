@@ -33,6 +33,9 @@ stop:
 	bash ops/stop.sh
 	docker container prune -f
 
+restart: stop
+	bash ops/start.sh
+
 clean:
 	rm -rf build/*
 
