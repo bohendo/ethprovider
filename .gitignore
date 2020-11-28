@@ -1,4 +1,4 @@
 *.swp
 .env
-build/
+.flags
 docker-compose.yml
