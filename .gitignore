@@ -1,5 +1,6 @@
 *.swp
 .env
 .flags
+.keystore
 .keystore.json
 docker-compose.yml

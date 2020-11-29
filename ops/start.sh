@@ -13,6 +13,7 @@ ETH_1_DATADIR="${ETH_1_DATADIR:-/data/$ETH_1_CLIENT}"
 ETH_2_DATADIR="${ETH_2_DATADIR:-/data/$ETH_2_CLIENT}"
 ETH_DOMAINNAME="${ETH_DOMAINNAME:-localhost}"
 ETH_IDENTITY="${ETH_IDENTITY:-$(whoami)}"
+ETH_VALIDATOR_PUBKEY="${ETH_VALIDATOR_PUBKEY:-}"
 ETH_VALIDATOR_WALLET="${ETH_VALIDATOR_WALLET:-$(pwd)/.keystore.json}"
 
 mkdir -p "$ETH_1_DATADIR" "$ETH_2_DATADIR"
@@ -91,6 +92,8 @@ services:
 
   $ETH_2_CLIENT:
     image: $eth2_image
+    environment:
+      ETH_VALIDATOR_PUBKEY: '$ETH_VALIDATOR_PUBKEY'
     logging:
       driver: 'json-file'
       options:
