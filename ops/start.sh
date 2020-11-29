@@ -11,6 +11,7 @@ ETH_1_CLIENT="${ETH_1_CLIENT:-geth}"
 ETH_2_CLIENT="${ETH_2_CLIENT:-lighthouse}"
 ETH_1_DATADIR="${ETH_1_DATADIR:-/data/$ETH_1_CLIENT}"
 ETH_2_DATADIR="${ETH_2_DATADIR:-/data/$ETH_2_CLIENT}"
+ETH_API_KEY="${ETH_API_KEY:-abc123}"
 ETH_DOMAINNAME="${ETH_DOMAINNAME:-localhost}"
 ETH_IDENTITY="${ETH_IDENTITY:-$(whoami)}"
 ETH_VALIDATOR_PUBKEY="${ETH_VALIDATOR_PUBKEY:-}"
@@ -66,6 +67,7 @@ services:
   proxy:
     image: '$proxy_image'
     environment:
+      ETH_API_KEY: '$ETH_API_KEY'
       ETH_DOMAINNAME: '$ETH_DOMAINNAME'
       ETH_1_HTTP: '$ETH_1_CLIENT:8545'
       ETH_1_WS: '$ETH_1_CLIENT:8546'
