@@ -1,15 +1,17 @@
 #!/bin/bash
 
+export ETH_API_KEY="${ETH_API_KEY:-abc123}"
 export ETH_DOMAINNAME="${ETH_DOMAINNAME:-localhost}"
 export ETH_EMAIL="${ETH_EMAIL:-noreply@gmail.com}"
 
 echo "Proxy container launched in env:"
-echo "ETH_DOMAINNAME=$ETH_DOMAINNAME"
-echo "ETH_EMAIL=$ETH_EMAIL"
 echo "ETH_1_HTTP=$ETH_1_HTTP"
 echo "ETH_1_WS=$ETH_1_WS"
 echo "ETH_2_HTTP=$ETH_2_HTTP"
 echo "ETH_2_WS=$ETH_2_WS"
+echo "ETH_API_KEY=$ETH_API_KEY"
+echo "ETH_DOMAINNAME=$ETH_DOMAINNAME"
+echo "ETH_EMAIL=$ETH_EMAIL"
 
 # Provide a message indicating that we're still waiting for everything to wake up
 function loading_msg {
