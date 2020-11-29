@@ -12,7 +12,6 @@ then
     --ws \
     --ws-address=0.0.0.0 \
     --ws-port=5053 \
-    --ws-allow-origin "*" \
     --http \
     --http-address=0.0.0.0 \
     --http-port=5052 \
