@@ -1,10 +1,10 @@
 
 project=eth
 
-proxy_version=$(shell grep proxy versions | awk -F '=' '{print $$2}')
-geth_version=$(shell grep geth versions | awk -F '=' '{print $$2}')
-prysma_version=$(shell grep prysma versions | awk -F '=' '{print $$2}')
-lighthouse_version=$(shell grep lighthouse versions | awk -F '=' '{print $$2}')
+proxy_version=v$(shell grep proxy versions | awk -F '=' '{print $$2}')
+geth_version=v$(shell grep geth versions | awk -F '=' '{print $$2}')
+prysma_version=v$(shell grep prysma versions | awk -F '=' '{print $$2}')
+lighthouse_version=v$(shell grep lighthouse versions | awk -F '=' '{print $$2}')
 
 # Get absolute paths to important dirs
 cwd=$(shell pwd)
