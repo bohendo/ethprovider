@@ -28,22 +28,22 @@ eth2_image="${project}_${ETH_2_CLIENT}:$(grep "$ETH_2_CLIENT" versions | awk -F 
 ########################################
 ## Setup secrets
 
-secret_name="validator_keystore_password"
-if grep -qs "$secret_name\>" <<<"$(docker secret ls)"
+password_secret="validator_keystore_password"
+if grep -qs "$password_secret\>" <<<"$(docker secret ls)"
 then
-  echo "A secret called $secret_name already exists, skipping secret setup."
-  echo "To overwrite this secret, remove the existing one first: 'docker secret rm $secret_name'"
+  echo "A secret called $password_secret already exists, skipping secret setup."
+  echo "To overwrite this secret, remove the existing one first: 'docker secret rm $password_secret'"
 else
-  echo "Enter the $secret_name secret & hit enter (no echo)"
+  echo "Enter the $password_secret secret & hit enter (no echo)"
   echo -n "> "
   read -rs secret_value
   echo
   if [[ -z "$secret_value" ]]
   then echo "No secret_value provided, skipping secret creation" && exit 0;
   fi
-  if echo "$secret_value" | tr -d '\n\r' | docker secret create "$secret_name" -
-  then echo "Successfully saved secret $secret_name"
-  else echo "Something went wrong creating a secret called $secret_name" && exit 1
+  if echo "$secret_value" | tr -d '\n\r' | docker secret create "$password_secret" -
+  then echo "Successfully saved secret $password_secret"
+  else echo "Something went wrong creating a secret called $password_secret" && exit 1
   fi
 fi
 
@@ -59,7 +59,7 @@ volumes:
   certs:
 
 secrets:
-  $secret_name:
+  $password_secret:
     external: true
 
 services:
@@ -103,7 +103,7 @@ services:
     ports:
       - '9000:9000'
     secrets:
-      - '$secret_name'
+      - '$password_secret'
     volumes:
       - '$ETH_2_DATADIR:/root/.lighthouse'
       - '$ETH_VALIDATOR_WALLET:/root/keystore.json'

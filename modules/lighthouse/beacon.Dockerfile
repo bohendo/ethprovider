@@ -2,6 +2,6 @@ ARG VERSION=latest
 FROM sigp/lighthouse:v$VERSION
 WORKDIR /root
 ENV HOME /root
-COPY entry.sh entry.sh
+COPY beacon.entry.sh entry.sh
 EXPOSE 9000 5052
 ENTRYPOINT ["sh", "entry.sh"]
