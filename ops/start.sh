@@ -25,14 +25,12 @@ ETH_API_KEY="${ETH_API_KEY:-abc123}"
 ETH_DOMAINNAME="${ETH_DOMAINNAME:-localhost}"
 ETH_IDENTITY="${ETH_IDENTITY:-$(whoami)}"
 ETH_VALIDATOR_PUBKEY="${ETH_VALIDATOR_PUBKEY:-}"
-ETH_VALIDATOR_DEFINITIONS="${ETH_VALIDATOR_DEFINITIONS:-$(pwd)/.keystore.json}"
 
 mkdir -p "$ETH_1_DATADIR" "$ETH_2_DATADIR"
-touch "$ETH_VALIDATOR_DEFINITIONS"
 
-proxy_image="${stack}_proxy:$(grep proxy versions | awk -F '=' '{print $2}')"
-eth1_image="${stack}_${ETH_1_CLIENT}:$(grep "$ETH_1_CLIENT" versions | awk -F '=' '{print $2}')"
-eth2_image="${stack}_${ETH_2_CLIENT}:$(grep "$ETH_2_CLIENT" versions | awk -F '=' '{print $2}')"
+proxy_image="${stack}_proxy:v$(grep proxy versions | awk -F '=' '{print $2}')"
+eth1_image="${stack}_${ETH_1_CLIENT}:v$(grep "$ETH_1_CLIENT" versions | awk -F '=' '{print $2}')"
+eth2_image="${stack}_${ETH_2_CLIENT}:v$(grep "$ETH_2_CLIENT" versions | awk -F '=' '{print $2}')"
 
 ########################################
 ## Setup secrets
@@ -57,16 +55,14 @@ else
 fi
 
 ########################################
-## Setup validator definitions
-
-if [[ ! -f "validator_definitions.yml" ]]
-then cp validator_definitions.example.yml validator_definitions.yml
-fi
-
-########################################
 ## Deploy
 
 echo "Deploying images $proxy_image and $eth1_image"
+
+logging="logging:
+      driver: 'json-file'
+      options:
+          max-size: '100m'"
 
 cat -> docker-compose.yml <<EOF
 version: '3.4'
@@ -85,44 +81,45 @@ services:
     environment:
       ETH_API_KEY: '$ETH_API_KEY'
       ETH_DOMAINNAME: '$ETH_DOMAINNAME'
-      ETH_1_HTTP: '$ETH_1_CLIENT:8545'
-      ETH_1_WS: '$ETH_1_CLIENT:8546'
-    logging:
-      driver: 'json-file'
-      options:
-          max-size: '100m'
+      ETH_1_HTTP: 'eth1:8545'
+      ETH_1_WS: 'eth1:8546'
+      ETH_2_HTTP: 'beacon:5052'
+      ETH_2_WS: 'beacon:5053'
+    $logging
     ports:
       - '80:80'
       - '443:443'
     volumes:
       - 'certs:/etc/letsencrypt'
 
-  $ETH_1_CLIENT:
+  eth1:
     image: $eth1_image
-    logging:
-      driver: 'json-file'
-      options:
-          max-size: '100m'
+    $logging
     ports:
       - '30303:30303'
     volumes:
       - '$ETH_1_DATADIR:/root/.ethereum'
 
-  $ETH_2_CLIENT:
+  beacon:
     image: $eth2_image
     environment:
-      ETH_VALIDATOR_PUBKEY: '$ETH_VALIDATOR_PUBKEY'
-    logging:
-      driver: 'json-file'
-      options:
-          max-size: '100m'
-    ports:
-      - '9000:9000'
+      ETH_2_NETWORK: 'mainnet'
+      ETH_2_MODULE: 'beacon'
+    $logging
+    volumes:
+      - '$ETH_2_DATADIR:/root/.lighthouse'
+
+  validator:
+    image: $eth2_image
+    environment:
+      ETH_2_NETWORK: 'mainnet'
+      ETH_2_MODULE: 'validator'
+      ETH_2_BEACON_URL: 'http://beacon:5052'
+    $logging
     secrets:
       - '$password_secret'
     volumes:
       - '$ETH_2_DATADIR:/root/.lighthouse'
-      - '$ETH_VALIDATOR_DEFINITIONS:/root/validator-definitions.yml'
 
 EOF
 

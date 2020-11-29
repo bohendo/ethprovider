@@ -8,6 +8,8 @@ echo "ETH_DOMAINNAME=$ETH_DOMAINNAME"
 echo "ETH_EMAIL=$ETH_EMAIL"
 echo "ETH_1_HTTP=$ETH_1_HTTP"
 echo "ETH_1_WS=$ETH_1_WS"
+echo "ETH_2_HTTP=$ETH_2_HTTP"
+echo "ETH_2_WS=$ETH_2_WS"
 
 # Provide a message indicating that we're still waiting for everything to wake up
 function loading_msg {
@@ -25,6 +27,12 @@ loading_pid="$!"
 echo "waiting for $ETH_1_HTTP..."
 wait-for -q -t 60 "$ETH_1_HTTP" 2>&1 | sed '/nc: bad address/d'
 while ! curl -s "$ETH_1_HTTP" > /dev/null
+do sleep 2
+done
+
+echo "waiting for $ETH_2_HTTP..."
+wait-for -q -t 60 "$ETH_2_HTTP" 2>&2 | sed '/nc: bad address/d'
+while ! curl -s "$ETH_2_HTTP" > /dev/null
 do sleep 2
 done
 
