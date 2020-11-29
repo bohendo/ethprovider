@@ -4,4 +4,4 @@ WORKDIR /root
 ENV HOME /root
 COPY entry.sh entry.sh
 EXPOSE 9000 5052
-ENTRYPOINT ["sh", "entry.sh"]
+ENTRYPOINT ["bash", "entry.sh"]
