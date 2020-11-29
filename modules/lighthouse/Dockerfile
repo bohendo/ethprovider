@@ -1,5 +1,5 @@
 ARG VERSION=latest
-FROM sigp/lighthouse:v$VERSION
+FROM sigp/lighthouse:$VERSION
 WORKDIR /root
 ENV HOME /root
 COPY entry.sh entry.sh

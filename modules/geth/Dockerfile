@@ -8,7 +8,7 @@ RUN apk add --no-cache --virtual build-tools \
     gcc git go linux-headers make musl-dev openssl \
  && git clone --progress https://github.com/ethereum/go-ethereum.git /go-ethereum \
  && cd /go-ethereum \
- && git checkout v$VERSION \
+ && git checkout $VERSION \
  && make geth \
  && cp /go-ethereum/build/bin/geth /usr/local/bin/ \
  && cd $HOME \
