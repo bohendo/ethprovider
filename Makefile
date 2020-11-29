@@ -55,14 +55,9 @@ geth: $(geth)/Dockerfile $(geth)/entry.sh
 	docker build --file $(geth)/Dockerfile --build-arg VERSION=$(geth_version) --tag $(project)_geth:$(geth_version) $(geth)
 	$(log_finish) && mv -f $(totalTime) .flags/$@
 
-lighthouse: lighthouse-validator lighthouse-beacon
-lighthouse-beacon: $(shell find modules/lighthouse $(find_options))
+lighthouse: $(shell find modules/lighthouse $(find_options))
 	$(log_start)
-	docker build --file modules/lighthouse/beacon.Dockerfile --build-arg VERSION=$(lighthouse_version) --tag $(project)_lighthouse:$(lighthouse_version) modules/lighthouse
-	$(log_finish) && mv -f $(totalTime) .flags/$@
-lighthouse-validator: $(shell find modules/lighthouse $(find_options))
-	$(log_start)
-	docker build --file modules/lighthouse/validator.Dockerfile --build-arg VERSION=$(lighthouse_version) --tag $(project)_lighthouse:$(lighthouse_version) modules/lighthouse
+	docker build --file modules/lighthouse/Dockerfile --build-arg VERSION=$(lighthouse_version) --tag $(project)_lighthouse:$(lighthouse_version) modules/lighthouse
 	$(log_finish) && mv -f $(totalTime) .flags/$@
 
 prysma: $(shell find modules/prysma $(find_options))

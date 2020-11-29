@@ -1,6 +1,16 @@
 #!/bin/bash
 set -e
 
+stack="eth"
+
+# make sure a network for this project has been created
+docker swarm init 2> /dev/null || true
+
+if grep -qs "$stack" <<<"$(docker stack ls --format '{{.Name}}')"
+then echo "An $stack stack is already running" && exit 0;
+else echo; echo "Preparing to launch $stack stack"
+fi
+
 ########################################
 ## Config
 
@@ -15,15 +25,14 @@ ETH_API_KEY="${ETH_API_KEY:-abc123}"
 ETH_DOMAINNAME="${ETH_DOMAINNAME:-localhost}"
 ETH_IDENTITY="${ETH_IDENTITY:-$(whoami)}"
 ETH_VALIDATOR_PUBKEY="${ETH_VALIDATOR_PUBKEY:-}"
-ETH_VALIDATOR_WALLET="${ETH_VALIDATOR_WALLET:-$(pwd)/.keystore.json}"
+ETH_VALIDATOR_DEFINITIONS="${ETH_VALIDATOR_DEFINITIONS:-$(pwd)/.keystore.json}"
 
 mkdir -p "$ETH_1_DATADIR" "$ETH_2_DATADIR"
-touch "$ETH_VALIDATOR_WALLET"
+touch "$ETH_VALIDATOR_DEFINITIONS"
 
-project="eth"
-proxy_image="${project}_proxy:$(grep proxy versions | awk -F '=' '{print $2}')"
-eth1_image="${project}_${ETH_1_CLIENT}:$(grep "$ETH_1_CLIENT" versions | awk -F '=' '{print $2}')"
-eth2_image="${project}_${ETH_2_CLIENT}:$(grep "$ETH_2_CLIENT" versions | awk -F '=' '{print $2}')"
+proxy_image="${stack}_proxy:$(grep proxy versions | awk -F '=' '{print $2}')"
+eth1_image="${stack}_${ETH_1_CLIENT}:$(grep "$ETH_1_CLIENT" versions | awk -F '=' '{print $2}')"
+eth2_image="${stack}_${ETH_2_CLIENT}:$(grep "$ETH_2_CLIENT" versions | awk -F '=' '{print $2}')"
 
 ########################################
 ## Setup secrets
@@ -45,6 +54,13 @@ else
   then echo "Successfully saved secret $password_secret"
   else echo "Something went wrong creating a secret called $password_secret" && exit 1
   fi
+fi
+
+########################################
+## Setup validator definitions
+
+if [[ ! -f "validator_definitions.yml" ]]
+then cp validator_definitions.example.yml validator_definitions.yml
 fi
 
 ########################################
@@ -106,8 +122,8 @@ services:
       - '$password_secret'
     volumes:
       - '$ETH_2_DATADIR:/root/.lighthouse'
-      - '$ETH_VALIDATOR_WALLET:/root/keystore.json'
+      - '$ETH_VALIDATOR_DEFINITIONS:/root/validator-definitions.yml'
 
 EOF
 
-docker stack deploy --compose-file docker-compose.yml eth
+docker stack deploy --compose-file docker-compose.yml $stack

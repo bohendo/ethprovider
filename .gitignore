@@ -4,3 +4,4 @@
 .keystore
 .keystore.json
 docker-compose.yml
+validator_definitions.yml
