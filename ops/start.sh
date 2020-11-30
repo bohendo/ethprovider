@@ -21,6 +21,7 @@ ETH_1_CLIENT="${ETH_1_CLIENT:-geth}"
 ETH_2_CLIENT="${ETH_2_CLIENT:-lighthouse}"
 ETH_1_DATADIR="${ETH_1_DATADIR:-/data/$ETH_1_CLIENT}"
 ETH_2_DATADIR="${ETH_2_DATADIR:-/data/$ETH_2_CLIENT}"
+ETH_2_ETH1_URL="${ETH_2_ETH1_URL:-http://eth1:8545}"
 ETH_API_KEY="${ETH_API_KEY:-abc123}"
 ETH_DOMAINNAME="${ETH_DOMAINNAME:-localhost}"
 
@@ -77,12 +78,12 @@ services:
   proxy:
     image: '$proxy_image'
     environment:
-      ETH_API_KEY: '$ETH_API_KEY'
-      ETH_DOMAINNAME: '$ETH_DOMAINNAME'
       ETH_1_HTTP: 'eth1:8545'
       ETH_1_WS: 'eth1:8546'
       ETH_2_HTTP: 'beacon:5052'
       ETH_2_WS: 'beacon:5053'
+      ETH_API_KEY: '$ETH_API_KEY'
+      ETH_DOMAINNAME: '$ETH_DOMAINNAME'
     $logging
     ports:
       - '80:80'
@@ -101,8 +102,9 @@ services:
   beacon:
     image: $eth2_image
     environment:
-      ETH_2_NETWORK: 'mainnet'
+      ETH_2_ETH1_URL: '$ETH_2_ETH1_URL'
       ETH_2_MODULE: 'beacon'
+      ETH_2_NETWORK: 'mainnet'
     $logging
     volumes:
       - '$ETH_2_DATADIR:/root/.lighthouse'
@@ -110,9 +112,9 @@ services:
   validator:
     image: $eth2_image
     environment:
-      ETH_2_NETWORK: 'mainnet'
-      ETH_2_MODULE: 'validator'
       ETH_2_BEACON_URL: 'http://beacon:5052'
+      ETH_2_MODULE: 'validator'
+      ETH_2_NETWORK: 'mainnet'
     $logging
     secrets:
       - '$password_secret'
