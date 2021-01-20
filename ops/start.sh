@@ -81,7 +81,6 @@ services:
       ETH_1_HTTP: 'eth1:8545'
       ETH_1_WS: 'eth1:8546'
       ETH_2_HTTP: 'beacon:5052'
-      ETH_2_WS: 'beacon:5053'
       ETH_API_KEY: '$ETH_API_KEY'
       ETH_DOMAINNAME: '$ETH_DOMAINNAME'
     $logging

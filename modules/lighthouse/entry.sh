@@ -7,12 +7,10 @@ ETH_2_NETWORK="${ETH_2_NETWORK:-mainnet}"
 
 if [[ "$ETH_2_MODULE" == "beacon" ]]
 then
+  # TODO: wait for eth1 provider url to become responsive
   echo "Running Lighthouse Beacon"
   exec lighthouse --network "$ETH_2_NETWORK" beacon \
     --eth1-endpoints="$ETH_2_ETH1_URL" \
-    --ws \
-    --ws-address=0.0.0.0 \
-    --ws-port=5053 \
     --http \
     --http-address=0.0.0.0 \
     --http-port=5052 \
@@ -20,6 +18,7 @@ then
 
 elif [[ "$ETH_2_MODULE" == "validator" ]]
 then
+  # TODO: wait for beacon url to become responsive
   echo "Running Lighthouse Validator"
   exec lighthouse --network "$ETH_2_NETWORK" validator --beacon-node="$ETH_2_BEACON_URL"
 
