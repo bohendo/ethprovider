@@ -4,7 +4,7 @@ exec geth \
   --nousb \
   --syncmode=fast \
   --light.serve=50 \
-  --cache=4096 \
+  --cache=2048 \
   --ipcdisable \
   --http \
   --http.addr=0.0.0.0 \
