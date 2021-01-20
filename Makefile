@@ -50,17 +50,17 @@ proxy: $(shell find $(proxy) $(find_options))
 	docker build --file $(proxy)/Dockerfile --tag $(project)_proxy:$(proxy_version) $(proxy)
 	$(log_finish) && mv -f $(totalTime) .flags/$@
 
-geth: $(geth)/Dockerfile $(geth)/entry.sh
+geth: versions $(geth)/Dockerfile $(geth)/entry.sh
 	$(log_start)
 	docker build --file $(geth)/Dockerfile --build-arg VERSION=$(geth_version) --tag $(project)_geth:$(geth_version) $(geth)
 	$(log_finish) && mv -f $(totalTime) .flags/$@
 
-lighthouse: $(shell find modules/lighthouse $(find_options))
+lighthouse: versions $(shell find modules/lighthouse $(find_options))
 	$(log_start)
 	docker build --file modules/lighthouse/Dockerfile --build-arg VERSION=$(lighthouse_version) --tag $(project)_lighthouse:$(lighthouse_version) modules/lighthouse
 	$(log_finish) && mv -f $(totalTime) .flags/$@
 
-prysma: $(shell find modules/prysma $(find_options))
+prysma: versions $(shell find modules/prysma $(find_options))
 	$(log_start)
 	docker build --file modules/prysma/Dockerfile --build-arg VERSION=$(prysma_version) --tag $(project)_prysma:$(prysma_version) modules/prysma
 	$(log_finish) && mv -f $(totalTime) .flags/$@
