@@ -5,6 +5,12 @@ ETH_2_ETH1_URL="${ETH_2_ETH1_URL:-http://eth1:8545}"
 ETH_2_MODULE="${ETH_2_MODULE:-beacon}"
 ETH_2_NETWORK="${ETH_2_NETWORK:-mainnet}"
 
+echo "Starting Lighthouse in evn:"
+echo "- ETH_2_BEACON_URL=$ETH_2_BEACON_URL"
+echo "- ETH_2_ETH1_URL=$ETH_2_ETH1_URL"
+echo "- ETH_2_MODULE=$ETH_2_MODULE"
+echo "- ETH_2_NETWORK=$ETH_2_NETWORK"
+
 function waitfor {
   no_proto=${1#*://}
   hostname=${no_proto%/*}

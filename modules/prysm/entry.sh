@@ -16,19 +16,13 @@ if [[ "$ETH_2_MODULE" == "beacon" ]]
 then
   waitfor "$ETH_2_ETH1_URL"
   echo "Running Prysm Beacon"
-  exec beacon \
-    --network "$ETH_2_NETWORK" \
-    --eth1-endpoints="$ETH_2_ETH1_URL" \
-    --http \
-    --http-address=0.0.0.0 \
-    --http-port=5052 \
-    --http-allow-origin "*"
+  exec beacon --pyrmont --accept-terms-of-use --http-web3provider="$ETH_2_ETH1_URL"
 
 elif [[ "$ETH_2_MODULE" == "validator" ]]
 then
   waitfor "$ETH_2_BEACON_URL"
   echo "Running Prysm Validator"
-  exec validator --network "$ETH_2_NETWORK" --beacon-node="$ETH_2_BEACON_URL"
+  exec validator --pyrmont --accept-terms-of-use --wallet-dir="$ETH_2_DATADIR"
 
 fi
 

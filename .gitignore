@@ -1,7 +1,16 @@
-*.swp
+
+## Private
 .env
-.flags
 .keystore
 .keystore.json
-docker-compose.yml
 validator_definitions.yml
+
+## Data Dirs
+.ethereum
+.eth2
+.lighthouse
+
+## Temp
+*.swp
+.flags
+docker-compose.yml
