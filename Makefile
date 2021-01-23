@@ -1,3 +1,6 @@
+# Specify make-specific variables (VPATH = prerequisite search path)
+VPATH=.flags
+SHELL=/bin/bash
 
 project=eth
 
@@ -5,15 +8,6 @@ proxy_version=v$(shell grep proxy versions | awk -F '=' '{print $$2}')
 geth_version=v$(shell grep geth versions | awk -F '=' '{print $$2}')
 prysm_version=v$(shell grep prysm versions | awk -F '=' '{print $$2}')
 lighthouse_version=v$(shell grep lighthouse versions | awk -F '=' '{print $$2}')
-
-# Get absolute paths to important dirs
-cwd=$(shell pwd)
-geth=$(cwd)/modules/geth
-proxy=$(cwd)/modules/proxy
-
-# Specify make-specific variables (VPATH = prerequisite search path)
-VPATH=.flags
-SHELL=/bin/bash
 
 # Env setup
 find_options=-type f -not -path "*/node_modules/*" -not -name "*.swp" -not -path "*/.*"
@@ -28,7 +22,7 @@ log_finish=@echo $$((`date "+%s"` - `cat $(startTime)`)) > $(totalTime); rm $(st
 .PHONY: default all stop clean deploy deploy-live proxy-logs provider-logs
 
 default: all
-all: proxy geth lighthouse
+all: proxy geth lighthouse prysm
 
 start:
 	bash ops/start.sh
@@ -45,14 +39,14 @@ clean:
 
 # Begin Real Rules
 
-proxy: $(shell find $(proxy) $(find_options))
+proxy: $(shell find modules/proxy $(find_options))
 	$(log_start)
-	docker build --file $(proxy)/Dockerfile --tag $(project)_proxy:$(proxy_version) $(proxy)
+	docker build --file modules/proxy/Dockerfile --tag $(project)_proxy:$(proxy_version) modules/proxy
 	$(log_finish) && mv -f $(totalTime) .flags/$@
 
-geth: versions $(geth)/Dockerfile $(geth)/entry.sh
+geth: versions $(shell find modules/geth $(find_options))
 	$(log_start)
-	docker build --file $(geth)/Dockerfile --build-arg VERSION=$(geth_version) --tag $(project)_geth:$(geth_version) $(geth)
+	docker build --file modules/geth/Dockerfile --build-arg VERSION=$(geth_version) --tag $(project)_geth:$(geth_version) modules/geth
 	$(log_finish) && mv -f $(totalTime) .flags/$@
 
 lighthouse: versions $(shell find modules/lighthouse $(find_options))
@@ -60,14 +54,7 @@ lighthouse: versions $(shell find modules/lighthouse $(find_options))
 	docker build --file modules/lighthouse/Dockerfile --build-arg VERSION=$(lighthouse_version) --tag $(project)_lighthouse:$(lighthouse_version) modules/lighthouse
 	$(log_finish) && mv -f $(totalTime) .flags/$@
 
-prysm: prysm_beacon prysm_beacon
-
-prysm_beacon: versions $(shell find modules/prysm $(find_options))
+prysm: versions $(shell find modules/prysm $(find_options))
 	$(log_start)
-	docker build --file modules/prysm/beacon.Dockerfile --build-arg VERSION=$(prysm_version) --tag $(project)_prysm_beacon:$(prysm_version) modules/prysm
-	$(log_finish) && mv -f $(totalTime) .flags/$@
-
-prysm_validator: versions $(shell find modules/prysm $(find_options))
-	$(log_start)
-	docker build --file modules/prysm/validator.Dockerfile --build-arg VERSION=$(prysm_version) --tag $(project)_prysm_validator:$(prysm_version) modules/prysm
+	docker build --file modules/prysm/Dockerfile --build-arg VERSION=$(prysm_version) --tag $(project)_prysm:$(prysm_version) modules/prysm
 	$(log_finish) && mv -f $(totalTime) .flags/$@
