@@ -3,7 +3,7 @@ project=eth
 
 proxy_version=v$(shell grep proxy versions | awk -F '=' '{print $$2}')
 geth_version=v$(shell grep geth versions | awk -F '=' '{print $$2}')
-prysma_version=v$(shell grep prysma versions | awk -F '=' '{print $$2}')
+prysm_version=v$(shell grep prysm versions | awk -F '=' '{print $$2}')
 lighthouse_version=v$(shell grep lighthouse versions | awk -F '=' '{print $$2}')
 
 # Get absolute paths to important dirs
@@ -60,7 +60,14 @@ lighthouse: versions $(shell find modules/lighthouse $(find_options))
 	docker build --file modules/lighthouse/Dockerfile --build-arg VERSION=$(lighthouse_version) --tag $(project)_lighthouse:$(lighthouse_version) modules/lighthouse
 	$(log_finish) && mv -f $(totalTime) .flags/$@
 
-prysma: versions $(shell find modules/prysma $(find_options))
+prysm: prysm_beacon prysm_beacon
+
+prysm_beacon: versions $(shell find modules/prysm $(find_options))
 	$(log_start)
-	docker build --file modules/prysma/Dockerfile --build-arg VERSION=$(prysma_version) --tag $(project)_prysma:$(prysma_version) modules/prysma
+	docker build --file modules/prysm/beacon.Dockerfile --build-arg VERSION=$(prysm_version) --tag $(project)_prysm_beacon:$(prysm_version) modules/prysm
+	$(log_finish) && mv -f $(totalTime) .flags/$@
+
+prysm_validator: versions $(shell find modules/prysm $(find_options))
+	$(log_start)
+	docker build --file modules/prysm/validator.Dockerfile --build-arg VERSION=$(prysm_version) --tag $(project)_prysm_validator:$(prysm_version) modules/prysm
 	$(log_finish) && mv -f $(totalTime) .flags/$@
