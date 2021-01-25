@@ -7,7 +7,7 @@ ETH_2_MODULE="${ETH_2_MODULE:-beacon}"
 ETH_2_NETWORK="${ETH_2_NETWORK:-pyrmont}"
 ETH_2_PASSWORD="${ETH_2_PASSWORD:-/run/secrets/password}"
 
-echo "Starting Lighthouse in evn:"
+echo "Starting Lighthouse in env:"
 echo "- ETH_2_BEACON_URL=$ETH_2_BEACON_URL"
 echo "- ETH_2_ETH1_URL=$ETH_2_ETH1_URL"
 echo "- ETH_2_DATADIR=$ETH_2_DATADIR"

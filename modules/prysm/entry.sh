@@ -3,19 +3,19 @@
 ETH_2_BEACON_URL="${ETH_2_BEACON_URL:-http://beacon:5052}"
 ETH_2_DATADIR="${ETH_2_DATADIR:-.eth2}"
 ETH_2_ETH1_URL="${ETH_2_ETH1_URL:-http://eth1:8545}"
-ETH_KEYSTORE="${ETH_KEYSTORE:-$ETH_2_DATADIR/validator_keys}"
 ETH_2_MODULE="${ETH_2_MODULE:-beacon}"
 ETH_2_NETWORK="${ETH_2_NETWORK:-pyrmont}"
 ETH_2_PASSWORD="${ETH_2_PASSWORD:-/run/secrets/password}"
+ETH_KEYSTORE="${ETH_KEYSTORE:-$ETH_2_DATADIR/validator_keys}"
 
-echo "Starting Prysm in evn:"
+echo "Starting Prysm in env:"
 echo "- ETH_2_BEACON_URL=$ETH_2_BEACON_URL"
-echo "- ETH_2_ETH1_URL=$ETH_2_ETH1_URL"
-echo "- ETH_KEYSTORE=$ETH_KEYSTORE"
 echo "- ETH_2_DATADIR=$ETH_2_DATADIR"
+echo "- ETH_2_ETH1_URL=$ETH_2_ETH1_URL"
 echo "- ETH_2_MODULE=$ETH_2_MODULE"
 echo "- ETH_2_NETWORK=$ETH_2_NETWORK"
 echo "- ETH_2_PASSWORD=$ETH_2_PASSWORD"
+echo "- ETH_KEYSTORE=$ETH_KEYSTORE"
 
 function waitfor {
   no_proto=${1#*://}

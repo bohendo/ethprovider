@@ -17,21 +17,21 @@ else network_flag="--$ETH_1_NETWORK"
 fi
 
 exec geth "$network_flag" \
-  --datadir="$ETH_1_DATADIR" \
-  --nousb \
-  --syncmode=fast \
-  --light.serve=50 \
   --cache="$ETH_1_CACHE" \
-  --ipcdisable \
+  --datadir="$ETH_1_DATADIR" \
   --http \
   --http.addr=0.0.0.0 \
-  --http.port=8545 \
   --http.api=eth,net \
   --http.corsdomain=* \
+  --http.port=8545 \
   --http.vhosts=* \
+  --ipcdisable \
+  --light.serve=50 \
+  --nousb \
+  --syncmode=fast \
   --ws \
   --ws.addr=0.0.0.0 \
-  --ws.port=8546 \
   --ws.api=eth,net \
   --ws.origins=* \
+  --ws.port=8546 \
   "$@"

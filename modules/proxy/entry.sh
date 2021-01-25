@@ -25,17 +25,18 @@ loading_pid="$!"
 # Wait for downstream services to wake up
 # Define service hostnames & ports we depend on
 
-echo "waiting for $ETH_1_HTTP..."
-wait-for -q -t 60 "$ETH_1_HTTP" 2>&1 | sed '/nc: bad address/d'
-while ! curl -s "$ETH_1_HTTP" > /dev/null
-do sleep 2
-done
+function waitfor {
+  no_proto=${1#*://}
+  hostname=${no_proto%/*}
+  echo "waiting for $hostname to wake up..."
+  wait-for -q -t 60 "$hostname" 2>&1 | sed '/nc: bad address/d'
+  while ! curl -s "$1" > /dev/null
+  do sleep 2
+  done
+}
 
-echo "waiting for $ETH_2_HTTP..."
-wait-for -q -t 60 "$ETH_2_HTTP" 2>&2 | sed '/nc: bad address/d'
-while ! curl -s "$ETH_2_HTTP" > /dev/null
-do sleep 2
-done
+waitfor "$ETH_1_HTTP"
+waitfor "$ETH_2_HTTP"
 
 # Kill the loading message server
 kill "$loading_pid" && pkill nc
