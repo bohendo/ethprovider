@@ -20,7 +20,7 @@ then network_flag=""
 else network_flag="--$ETH_1_NETWORK"
 fi
 
-exec geth "$network_flag" \
+exec geth $network_flag \
   --cache="$ETH_1_CACHE" \
   --datadir="$ETH_1_DATADIR" \
   --http \
