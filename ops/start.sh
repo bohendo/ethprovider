@@ -37,7 +37,7 @@ ETH_2_KEYSTORE="${ETH_2_KEYSTORE:-validator_keys}"
 ETH_2_NETWORK="${ETH_2_NETWORK:-pyrmont}"
 
 ETH_API_KEY="${ETH_API_KEY:-abc123}"
-ETH_DATA_ROOT="${ETH_DATA_ROOT:-.data}"
+ETH_DATA_ROOT="${ETH_DATA_ROOT:-$root/.data}"
 ETH_DOMAINNAME="${ETH_DOMAINNAME:-}"
 
 echo "Starting eth stack in env:"
@@ -58,8 +58,7 @@ echo "- ETH_DOMAINNAME=$ETH_DOMAINNAME"
 ########################################
 ## Configure internal vars
 
-data="$root/$ETH_DATA_ROOT"
-mkdir -p "$data/$ETH_1_DATADIR" "$data/$ETH_2_DATADIR"
+mkdir -p "$ETH_DATA_ROOT/$ETH_1_DATADIR" "$ETH_DATA_ROOT/$ETH_2_DATADIR"
 
 proxy_image="${stack}_proxy:v$(grep proxy versions | awk -F '=' '{print $2}')"
 geth_image="${stack}_geth:v$(grep "geth" versions | awk -F '=' '{print $2}')"
@@ -139,7 +138,7 @@ services:
     ports:
       - '30303:30303'
     volumes:
-      - '$data/$ETH_1_DATADIR:/root/$ETH_1_DATADIR'
+      - '$ETH_DATA_ROOT/$ETH_1_DATADIR:/root/$ETH_1_DATADIR'
 
   beacon:
     image: $lighthouse_image
@@ -151,7 +150,7 @@ services:
       ETH_2_INTERNAL_PORT: '$beacon_internal_port'
     $logging
     volumes:
-      - '$data/$ETH_2_DATADIR:/root/$ETH_2_DATADIR'
+      - '$ETH_DATA_ROOT/$ETH_2_DATADIR:/root/$ETH_2_DATADIR'
 
   validator:
     image: $lighthouse_image
@@ -166,7 +165,7 @@ services:
     secrets:
       - '$password_secret'
     volumes:
-      - '$data/$ETH_2_DATADIR:/root/$ETH_2_DATADIR'
+      - '$ETH_DATA_ROOT/$ETH_2_DATADIR:/root/$ETH_2_DATADIR'
       - '$root/$ETH_2_KEYSTORE:/root/$ETH_2_KEYSTORE'
 
 EOF
