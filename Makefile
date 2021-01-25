@@ -6,7 +6,6 @@ project=eth
 
 proxy_version=v$(shell grep proxy versions | awk -F '=' '{print $$2}')
 geth_version=v$(shell grep geth versions | awk -F '=' '{print $$2}')
-prysm_version=v$(shell grep prysm versions | awk -F '=' '{print $$2}')
 lighthouse_version=v$(shell grep lighthouse versions | awk -F '=' '{print $$2}')
 
 # Env setup
@@ -22,7 +21,7 @@ log_finish=@echo $$((`date "+%s"` - `cat $(startTime)`)) > $(totalTime); rm $(st
 .PHONY: default all stop clean deploy deploy-live proxy-logs provider-logs
 
 default: all
-all: proxy geth lighthouse prysm
+all: proxy geth lighthouse
 
 start:
 	bash ops/start.sh
@@ -52,9 +51,4 @@ geth: versions $(shell find modules/geth $(find_options))
 lighthouse: versions $(shell find modules/lighthouse $(find_options))
 	$(log_start)
 	docker build --file modules/lighthouse/Dockerfile --build-arg VERSION=$(lighthouse_version) --tag $(project)_lighthouse:$(lighthouse_version) modules/lighthouse
-	$(log_finish) && mv -f $(totalTime) .flags/$@
-
-prysm: versions $(shell find modules/prysm $(find_options))
-	$(log_start)
-	docker build --file modules/prysm/Dockerfile --build-arg VERSION=$(prysm_version) --tag $(project)_prysm:$(prysm_version) modules/prysm
 	$(log_finish) && mv -f $(totalTime) .flags/$@

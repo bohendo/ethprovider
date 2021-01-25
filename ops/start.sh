@@ -53,7 +53,6 @@ mkdir -p "$data/$ETH_1_DATADIR" "$data/$ETH_2_DATADIR"
 proxy_image="${stack}_proxy:v$(grep proxy versions | awk -F '=' '{print $2}')"
 geth_image="${stack}_geth:v$(grep "geth" versions | awk -F '=' '{print $2}')"
 lighthouse_image="${stack}_lighthouse:v$(grep "lighthouse" versions | awk -F '=' '{print $2}')"
-# prysm_image="${stack}_prysm:v$(grep "prysm" versions | awk -F '=' '{print $2}')"
 
 ########################################
 ## Setup secrets
