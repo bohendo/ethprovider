@@ -1,15 +1,19 @@
 #!/bin/bash
 
 ETH_2_BEACON_URL="${ETH_2_BEACON_URL:-http://beacon:5052}"
+ETH_2_DATADIR="${ETH_2_DATADIR:-.lighthouse}"
 ETH_2_ETH1_URL="${ETH_2_ETH1_URL:-http://eth1:8545}"
 ETH_2_MODULE="${ETH_2_MODULE:-beacon}"
-ETH_2_NETWORK="${ETH_2_NETWORK:-mainnet}"
+ETH_2_NETWORK="${ETH_2_NETWORK:-pyrmont}"
+ETH_2_PASSWORD="${ETH_2_PASSWORD:-/run/secrets/password}"
 
 echo "Starting Lighthouse in evn:"
 echo "- ETH_2_BEACON_URL=$ETH_2_BEACON_URL"
 echo "- ETH_2_ETH1_URL=$ETH_2_ETH1_URL"
+echo "- ETH_2_DATADIR=$ETH_2_DATADIR"
 echo "- ETH_2_MODULE=$ETH_2_MODULE"
 echo "- ETH_2_NETWORK=$ETH_2_NETWORK"
+echo "- ETH_2_PASSWORD=$ETH_2_PASSWORD"
 
 function waitfor {
   no_proto=${1#*://}
@@ -23,16 +27,23 @@ then
   waitfor "$ETH_2_ETH1_URL"
   echo "Running Lighthouse Beacon"
   exec lighthouse --network "$ETH_2_NETWORK" beacon \
+    --datadir="$ETH_2_DATADIR" \
     --eth1-endpoints="$ETH_2_ETH1_URL" \
     --http \
     --http-address=0.0.0.0 \
-    --http-port=5052 \
-    --http-allow-origin "*"
+    --http-allow-origin "*" \
+    --http-port=5052
 
 elif [[ "$ETH_2_MODULE" == "validator" ]]
 then
   waitfor "$ETH_2_BEACON_URL"
   echo "Running Lighthouse Validator"
-  exec lighthouse --network "$ETH_2_NETWORK" validator --beacon-node="$ETH_2_BEACON_URL"
+  exec lighthouse --network "$ETH_2_NETWORK" validator \
+    --datadir="$ETH_2_DATADIR" \
+    --beacon-node="$ETH_2_BEACON_URL"
+
+else
+  echo "Unknown Lighthouse module: $ETH_2_MODULE"
+  exit 1
 
 fi

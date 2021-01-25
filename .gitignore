@@ -4,11 +4,13 @@
 .keystore
 .keystore.json
 validator_definitions.yml
+validator_keys
 
 ## Data Dirs
-.ethereum
-.eth2
-.lighthouse
+**/.eth2
+**/.ethereum
+**/.lighthouse
+.data
 
 ## Temp
 *.swp

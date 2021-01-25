@@ -20,13 +20,15 @@ fi
 if [[ -f ".env" ]]; then source ".env"; fi
 
 ETH_1_CLIENT="${ETH_1_CLIENT:-geth}"
-ETH_1_DATADIR="${ETH_1_DATADIR:-.ethereum}"
+ETH_1_DATADIR="${ETH_1_DATADIR:-.$ETH_1_CLIENT}"
 ETH_2_CLIENT_1="${ETH_2_CLIENT_1:-prysm}"
 ETH_2_CLIENT_2="${ETH_2_CLIENT_2:-lighthouse}"
-ETH_2_DATADIR_1="${ETH_2_DATADIR_1:-.eth2}"
-ETH_2_DATADIR_2="${ETH_2_DATADIR_2:-.lighthouse}"
+ETH_2_DATADIR_1="${ETH_2_DATADIR_1:-.$ETH_2_CLIENT_1}"
+ETH_2_DATADIR_2="${ETH_2_DATADIR_2:-.$ETH_2_CLIENT_2}"
 ETH_2_ETH1_URL="${ETH_2_ETH1_URL:-http://eth1:8545}"
 ETH_API_KEY="${ETH_API_KEY:-abc123}"
+ETH_DATA_ROOT="${ETH_DATA_ROOT:-.data}"
+ETH_KEYSTORE="${ETH_DATA_ROOT:-$ETH_DATA_ROOT/validator_keys}"
 ETH_DOMAINNAME="${ETH_DOMAINNAME:-localhost}"
 ETH_NETWORK="${ETH_NETWORK:-pyrmont}"
 
@@ -39,10 +41,13 @@ echo "- ETH_2_DATADIR_1=$ETH_2_DATADIR_1"
 echo "- ETH_2_DATADIR_2=$ETH_2_DATADIR_2"
 echo "- ETH_2_ETH1_URL=$ETH_2_ETH1_URL"
 echo "- ETH_API_KEY=$ETH_API_KEY"
+echo "- ETH_DATA_ROOT=$ETH_DATA_ROOT"
+echo "- ETH_KEYSTORE=$ETH_KEYSTORE"
 echo "- ETH_DOMAINNAME=$ETH_DOMAINNAME"
 echo "- ETH_NETWORK=$ETH_NETWORK"
 
-mkdir -p "$root/$ETH_1_DATADIR" "$root/$ETH_2_DATADIR_1" "$root/$ETH_2_DATADIR_2"
+data="$root/$ETH_DATA_ROOT"
+mkdir -p "$data/$ETH_1_DATADIR" "$data/$ETH_2_DATADIR_1" "$data/$ETH_2_DATADIR_2"
 
 proxy_image="${stack}_proxy:v$(grep proxy versions | awk -F '=' '{print $2}')"
 eth1_image="${stack}_${ETH_1_CLIENT}:v$(grep "$ETH_1_CLIENT" versions | awk -F '=' '{print $2}')"
@@ -81,7 +86,9 @@ logging="logging:
       options:
           max-size: '100m'"
 
-cat -> docker-compose.yml <<EOF
+docker_compose=.docker-compose.yml
+rm -rf $docker_compose
+cat -> $docker_compose <<EOF
 version: '3.4'
 
 volumes:
@@ -115,52 +122,60 @@ services:
     ports:
       - '30303:30303'
     volumes:
-      - '$root/$ETH_1_DATADIR:/root/$ETH_1_DATADIR'
+      - '$data/$ETH_1_DATADIR:/root/$ETH_1_DATADIR'
 
   beacon_1:
     image: $eth2_image_1
     environment:
+      ETH_2_DATADIR: '$ETH_2_DATADIR_1'
       ETH_2_ETH1_URL: '$ETH_2_ETH1_URL'
       ETH_2_MODULE: 'beacon'
       ETH_2_NETWORK: '$ETH_NETWORK'
     $logging
     volumes:
-      - '$root/$ETH_2_DATADIR_1:/root/$ETH_2_DATADIR_1'
+      - '$data/$ETH_2_DATADIR_1:/root/$ETH_2_DATADIR_1'
 
   validator_1:
     image: $eth2_image_1
     environment:
       ETH_2_BEACON_URL: 'http://beacon_1:5052'
+      ETH_2_DATADIR: '$ETH_2_DATADIR_1'
+      ETH_KEYSTORE: '$ETH_KEYSTORE'
       ETH_2_MODULE: 'validator'
       ETH_2_NETWORK: '$ETH_NETWORK'
+      ETH_2_PASSWORD: '/run/secrets/$password_secret'
     $logging
     secrets:
       - '$password_secret'
     volumes:
-      - '$root/$ETH_2_DATADIR_1:/root/$ETH_2_DATADIR_1'
+      - '$data/$ETH_2_DATADIR_1:/root/$ETH_2_DATADIR_1'
 
   beacon_2:
     image: $eth2_image_2
     environment:
+      ETH_2_DATADIR: '$ETH_2_DATADIR_2'
       ETH_2_ETH1_URL: '$ETH_2_ETH1_URL'
       ETH_2_MODULE: 'beacon'
       ETH_2_NETWORK: '$ETH_NETWORK'
     $logging
     volumes:
-      - '$root/$ETH_2_DATADIR_2:/root/$ETH_2_DATADIR_2'
+      - '$data/$ETH_2_DATADIR_2:/root/$ETH_2_DATADIR_2'
 
   validator_2:
     image: $eth2_image_2
     environment:
       ETH_2_BEACON_URL: 'http://beacon_2:5052'
+      ETH_2_DATADIR: '$ETH_2_DATADIR_2'
+      ETH_KEYSTORE: '$ETH_KEYSTORE'
       ETH_2_MODULE: 'validator'
       ETH_2_NETWORK: '$ETH_NETWORK'
+      ETH_2_PASSWORD: '/run/secrets/$password_secret'
     $logging
     secrets:
       - '$password_secret'
     volumes:
-      - '$root/$ETH_2_DATADIR_2:/root/$ETH_2_DATADIR_2'
+      - '$data/$ETH_2_DATADIR_2:/root/$ETH_2_DATADIR_2'
 
 EOF
 
-docker stack deploy --compose-file docker-compose.yml $stack
+docker stack deploy --compose-file $docker_compose $stack
