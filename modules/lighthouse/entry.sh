@@ -41,14 +41,17 @@ then
 
 elif [[ "$ETH_2_MODULE" == "validator" ]]
 then
-  echo "Importing from validator accounts from keystore"
+
   if [[ ! -f "$ETH_2_PASSWORD_FILE" ]]
-  then echo "Password file does not exist at $ETH_2_PASSWORD_FILE" && exit 1
+  then echo "Password file does not exist at $ETH_2_PASSWORD_FILE, skipping validator import"
+  else
+    echo "Importing validator accounts from keystore"
+    lighthouse --network "$ETH_2_NETWORK" account validator import \
+      --datadir="$ETH_2_DATADIR" \
+      --directory "$ETH_2_KEYSTORE" \
+      --reuse-password \
+      --stdin-inputs < "$ETH_2_PASSWORD_FILE"
   fi
-  lighthouse --network "$ETH_2_NETWORK" account validator import \
-    --directory "$ETH_2_KEYSTORE" \
-    --reuse-password \
-    --stdin-inputs < "$ETH_2_PASSWORD_FILE"
   waitfor "$ETH_2_BEACON_URL"
   echo "Running Lighthouse Validator"
   exec lighthouse --network "$ETH_2_NETWORK" validator \

@@ -157,7 +157,7 @@ services:
     image: $lighthouse_image
     environment:
       ETH_2_BEACON_URL: 'http://beacon:$beacon_internal_port'
-      ETH_2_DATADIR: '$ETH_2_DATADIR'
+      ETH_2_DATADIR: '$ETH_2_DATADIR/$ETH_2_NETWORK'
       ETH_2_KEYSTORE: '$ETH_2_KEYSTORE'
       ETH_2_MODULE: 'validator'
       ETH_2_NETWORK: '$ETH_2_NETWORK'
