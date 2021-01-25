@@ -1,21 +1,24 @@
 #!/bin/bash
 
 ETH_2_BEACON_URL="${ETH_2_BEACON_URL:-http://beacon:5052}"
-ETH_2_DATADIR="${ETH_2_DATADIR:-.lighthouse}"
 ETH_2_ETH1_URL="${ETH_2_ETH1_URL:-http://eth1:8545}"
 ETH_2_INTERNAL_PORT="${ETH_2_INTERNAL_PORT:-5025}"
+ETH_2_KEYSTORE="${ETH_2_KEYSTORE:-.lighthouse}"
 ETH_2_MODULE="${ETH_2_MODULE:-beacon}"
 ETH_2_NETWORK="${ETH_2_NETWORK:-pyrmont}"
-ETH_2_PASSWORD="${ETH_2_PASSWORD:-/run/secrets/password}"
+ETH_2_PASSWORD_FILE="${ETH_2_PASSWORD_FILE:-/run/secrets/password}"
+
+ETH_2_DATADIR="${ETH_2_DATADIR:-lighthouse/$ETH_2_NETWORK}"
 
 echo "Starting Lighthouse in env:"
 echo "- ETH_2_BEACON_URL=$ETH_2_BEACON_URL"
 echo "- ETH_2_DATADIR=$ETH_2_DATADIR"
 echo "- ETH_2_ETH1_URL=$ETH_2_ETH1_URL"
 echo "- ETH_2_INTERNAL_PORT=$ETH_2_INTERNAL_PORT"
+echo "- ETH_2_KEYSTORE=$ETH_2_KEYSTORE"
 echo "- ETH_2_MODULE=$ETH_2_MODULE"
 echo "- ETH_2_NETWORK=$ETH_2_NETWORK"
-echo "- ETH_2_PASSWORD=$ETH_2_PASSWORD"
+echo "- ETH_2_PASSWORD_FILE=$ETH_2_PASSWORD_FILE"
 
 function waitfor {
   no_proto=${1#*://}
@@ -38,8 +41,14 @@ then
 
 elif [[ "$ETH_2_MODULE" == "validator" ]]
 then
-  # TODO: Check keystore dir &
-  ls validator_keys
+  echo "Importing from validator accounts from keystore"
+  if [[ ! -f "$ETH_2_PASSWORD_FILE" ]]
+  then echo "Password file does not exist at $ETH_2_PASSWORD_FILE" && exit 1
+  fi
+  lighthouse --network "$ETH_2_NETWORK" account validator import \
+    --directory "$ETH_2_KEYSTORE" \
+    --reuse-password \
+    --stdin-inputs < "$ETH_2_PASSWORD_FILE"
   waitfor "$ETH_2_BEACON_URL"
   echo "Running Lighthouse Validator"
   exec lighthouse --network "$ETH_2_NETWORK" validator \
