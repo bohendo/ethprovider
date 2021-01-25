@@ -22,7 +22,7 @@ echo "- ETH_2_PASSWORD_FILE=$ETH_2_PASSWORD_FILE"
 
 function waitfor {
   no_proto=${1#*://}
-  hostname=${no_proto%/*}
+  hostname=${no_proto%%/*}
   echo "waiting for $hostname to wake up..."
   wait-for -q -t 60 "$hostname" 2>&1 | sed '/nc: bad address/d'
 }
