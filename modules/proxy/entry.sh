@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export ETH_API_KEY="${ETH_API_KEY:-abc123}"
-export ETH_DOMAINNAME="${ETH_DOMAINNAME:-localhost}"
+export ETH_DOMAINNAME="${ETH_DOMAINNAME:-}"
 export ETH_EMAIL="${ETH_EMAIL:-noreply@gmail.com}"
 
 echo "Proxy container launched in env:"

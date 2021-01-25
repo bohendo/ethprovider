@@ -28,10 +28,11 @@ ETH_2_CLIENT_2="${ETH_2_CLIENT_2:-lighthouse}"
 ETH_2_DATADIR_1="${ETH_2_DATADIR_1:-$ETH_2_CLIENT_1}"
 ETH_2_DATADIR_2="${ETH_2_DATADIR_2:-$ETH_2_CLIENT_2}"
 ETH_2_ETH1_URL="${ETH_2_ETH1_URL:-http://eth1:8545}"
+ETH_2_INTERNAL_PORT="${ETH_2_INTERNAL_PORT:-5025}"
 ETH_2_NETWORK="${ETH_2_NETWORK:-pyrmont}"
 ETH_API_KEY="${ETH_API_KEY:-abc123}"
 ETH_DATA_ROOT="${ETH_DATA_ROOT:-.data}"
-ETH_DOMAINNAME="${ETH_DOMAINNAME:-localhost}"
+ETH_DOMAINNAME="${ETH_DOMAINNAME:-}"
 ETH_KEYSTORE="${ETH_DATA_ROOT:-$ETH_DATA_ROOT/validator_keys}"
 
 echo "Starting eth stack in env:"
@@ -44,11 +45,15 @@ echo "- ETH_2_CLIENT_2=$ETH_2_CLIENT_2"
 echo "- ETH_2_DATADIR_1=$ETH_2_DATADIR_1"
 echo "- ETH_2_DATADIR_2=$ETH_2_DATADIR_2"
 echo "- ETH_2_ETH1_URL=$ETH_2_ETH1_URL"
+echo "- ETH_2_INTERNAL_PORT=$ETH_2_INTERNAL_PORT"
 echo "- ETH_2_NETWORK=$ETH_2_NETWORK"
 echo "- ETH_API_KEY=$ETH_API_KEY"
 echo "- ETH_DATA_ROOT=$ETH_DATA_ROOT"
 echo "- ETH_DOMAINNAME=$ETH_DOMAINNAME"
 echo "- ETH_KEYSTORE=$ETH_KEYSTORE"
+
+########################################
+## Configure internal vars
 
 data="$root/$ETH_DATA_ROOT"
 mkdir -p "$data/$ETH_1_DATADIR" "$data/$ETH_2_DATADIR_1" "$data/$ETH_2_DATADIR_2"
@@ -83,7 +88,7 @@ fi
 ########################################
 ## Deploy
 
-echo "Deploying images $proxy_image and $eth1_image"
+echo "Deploying images $proxy_image and $eth1_image among others"
 
 logging="logging:
       driver: 'json-file'
@@ -109,7 +114,7 @@ services:
     environment:
       ETH_1_HTTP: 'eth1:8545'
       ETH_1_WS: 'eth1:8546'
-      ETH_2_HTTP: 'beacon:5052'
+      ETH_2_HTTP: 'beacon_1:$ETH_2_INTERNAL_PORT'
       ETH_API_KEY: '$ETH_API_KEY'
       ETH_DOMAINNAME: '$ETH_DOMAINNAME'
     $logging
@@ -139,6 +144,7 @@ services:
       ETH_2_ETH1_URL: '$ETH_2_ETH1_URL'
       ETH_2_MODULE: 'beacon'
       ETH_2_NETWORK: '$ETH_2_NETWORK'
+      ETH_2_INTERNAL_PORT: '$ETH_2_INTERNAL_PORT'
     $logging
     volumes:
       - '$data/$ETH_2_DATADIR_1:/root/$ETH_2_DATADIR_1'
@@ -165,6 +171,7 @@ services:
       ETH_2_ETH1_URL: '$ETH_2_ETH1_URL'
       ETH_2_MODULE: 'beacon'
       ETH_2_NETWORK: '$ETH_2_NETWORK'
+      ETH_2_INTERNAL_PORT: '$ETH_2_INTERNAL_PORT'
     $logging
     volumes:
       - '$data/$ETH_2_DATADIR_2:/root/$ETH_2_DATADIR_2'
