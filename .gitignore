@@ -15,4 +15,4 @@ validator_keys
 ## Temp
 *.swp
 .flags
-docker-compose.yml
+*.docker-compose.yml
