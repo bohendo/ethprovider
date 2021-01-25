@@ -20,28 +20,22 @@ fi
 if [[ -f ".env" ]]; then source ".env"; fi
 
 ETH_1_CACHE="${ETH_1_CACHE:-2048}"
-ETH_1_CLIENT="${ETH_1_CLIENT:-geth}"
-ETH_1_DATADIR="${ETH_1_DATADIR:-$ETH_1_CLIENT}"
+ETH_1_DATADIR="${ETH_1_DATADIR:-geth}"
 ETH_1_NETWORK="${ETH_1_NETWORK:-goerli}"
-ETH_2_CLIENT_1="${ETH_2_CLIENT_1:-lighthouse}"
-ETH_2_CLIENT_2="${ETH_2_CLIENT_2:-prysm}"
-ETH_2_DATADIR_1="${ETH_2_DATADIR_1:-$ETH_2_CLIENT_1}"
-ETH_2_DATADIR_2="${ETH_2_DATADIR_2:-$ETH_2_CLIENT_2}"
-ETH_2_ETH1_URL="${ETH_2_ETH1_URL:-http://eth1:8545}"
+ETH_2_DATADIR_1="${ETH_2_DATADIR_1:-lighthouse}"
+ETH_2_DATADIR_2="${ETH_2_DATADIR_2:-prysm}"
+ETH_2_ETH1_URL="${ETH_2_ETH1_URL:-http://geth:8545}"
 ETH_2_INTERNAL_PORT="${ETH_2_INTERNAL_PORT:-5025}"
 ETH_2_NETWORK="${ETH_2_NETWORK:-pyrmont}"
 ETH_API_KEY="${ETH_API_KEY:-abc123}"
 ETH_DATA_ROOT="${ETH_DATA_ROOT:-.data}"
 ETH_DOMAINNAME="${ETH_DOMAINNAME:-}"
-ETH_KEYSTORE="${ETH_DATA_ROOT:-$ETH_DATA_ROOT/validator_keys}"
+ETH_KEYSTORE="${ETH_KEYSTORE:-validator_keys}"
 
 echo "Starting eth stack in env:"
 echo "- ETH_1_CACHE=$ETH_1_CACHE"
-echo "- ETH_1_CLIENT=$ETH_1_CLIENT"
 echo "- ETH_1_DATADIR=$ETH_1_DATADIR"
 echo "- ETH_1_NETWORK=$ETH_1_NETWORK"
-echo "- ETH_2_CLIENT_1=$ETH_2_CLIENT_1"
-echo "- ETH_2_CLIENT_2=$ETH_2_CLIENT_2"
 echo "- ETH_2_DATADIR_1=$ETH_2_DATADIR_1"
 echo "- ETH_2_DATADIR_2=$ETH_2_DATADIR_2"
 echo "- ETH_2_ETH1_URL=$ETH_2_ETH1_URL"
@@ -59,9 +53,9 @@ data="$root/$ETH_DATA_ROOT"
 mkdir -p "$data/$ETH_1_DATADIR" "$data/$ETH_2_DATADIR_1" "$data/$ETH_2_DATADIR_2"
 
 proxy_image="${stack}_proxy:v$(grep proxy versions | awk -F '=' '{print $2}')"
-eth1_image="${stack}_${ETH_1_CLIENT}:v$(grep "$ETH_1_CLIENT" versions | awk -F '=' '{print $2}')"
-eth2_image_1="${stack}_${ETH_2_CLIENT_1}:v$(grep "$ETH_2_CLIENT_1" versions | awk -F '=' '{print $2}')"
-eth2_image_2="${stack}_${ETH_2_CLIENT_2}:v$(grep "$ETH_2_CLIENT_2" versions | awk -F '=' '{print $2}')"
+geth_image="${stack}_geth:v$(grep "geth" versions | awk -F '=' '{print $2}')"
+lighthouse_image="${stack}_lighthouse:v$(grep "lighthouse" versions | awk -F '=' '{print $2}')"
+prysm_image="${stack}_prysm:v$(grep "prysm" versions | awk -F '=' '{print $2}')"
 
 ########################################
 ## Setup secrets
@@ -88,7 +82,7 @@ fi
 ########################################
 ## Deploy
 
-echo "Deploying images $proxy_image and $eth1_image among others"
+echo "Deploying images $proxy_image and $geth_image among others"
 
 logging="logging:
       driver: 'json-file'
@@ -112,9 +106,9 @@ services:
   proxy:
     image: '$proxy_image'
     environment:
-      ETH_1_HTTP: 'eth1:8545'
-      ETH_1_WS: 'eth1:8546'
-      ETH_2_HTTP: 'beacon_1:$ETH_2_INTERNAL_PORT'
+      ETH_1_HTTP: 'geth:8545'
+      ETH_1_WS: 'geth:8546'
+      ETH_2_HTTP: 'lighthouse:$ETH_2_INTERNAL_PORT'
       ETH_API_KEY: '$ETH_API_KEY'
       ETH_DOMAINNAME: '$ETH_DOMAINNAME'
     $logging
@@ -124,11 +118,10 @@ services:
     volumes:
       - 'certs:/etc/letsencrypt'
 
-  eth1:
-    image: $eth1_image
+  geth:
+    image: $geth_image
     environment:
       ETH_1_CACHE: '$ETH_1_CACHE'
-      ETH_1_CLIENT: '$ETH_1_CLIENT'
       ETH_1_DATADIR: '$ETH_1_DATADIR/$ETH_1_NETWORK'
       ETH_1_NETWORK: '$ETH_1_NETWORK'
     $logging
@@ -137,8 +130,8 @@ services:
     volumes:
       - '$data/$ETH_1_DATADIR:/root/$ETH_1_DATADIR'
 
-  beacon_1:
-    image: $eth2_image_1
+  lighthouse:
+    image: $lighthouse_image
     environment:
       ETH_2_DATADIR: '$ETH_2_DATADIR_1'
       ETH_2_ETH1_URL: '$ETH_2_ETH1_URL'
@@ -149,12 +142,11 @@ services:
     volumes:
       - '$data/$ETH_2_DATADIR_1:/root/$ETH_2_DATADIR_1'
 
-  validator_1:
-    image: $eth2_image_1
+  lighthouse_validator:
+    image: $lighthouse_image
     environment:
-      ETH_2_BEACON_URL: 'http://beacon_1:5052'
+      ETH_2_BEACON_URL: 'http://lighthouse:5052'
       ETH_2_DATADIR: '$ETH_2_DATADIR_1'
-      ETH_KEYSTORE: '$ETH_KEYSTORE'
       ETH_2_MODULE: 'validator'
       ETH_2_NETWORK: '$ETH_2_NETWORK'
       ETH_2_PASSWORD: '/run/secrets/$password_secret'
@@ -163,9 +155,10 @@ services:
       - '$password_secret'
     volumes:
       - '$data/$ETH_2_DATADIR_1:/root/$ETH_2_DATADIR_1'
+      - '$root/$ETH_KEYSTORE:/root/validator_keys'
 
-  beacon_2:
-    image: $eth2_image_2
+  prysm:
+    image: $prysm_image
     environment:
       ETH_2_DATADIR: '$ETH_2_DATADIR_2'
       ETH_2_ETH1_URL: '$ETH_2_ETH1_URL'
@@ -176,12 +169,11 @@ services:
     volumes:
       - '$data/$ETH_2_DATADIR_2:/root/$ETH_2_DATADIR_2'
 
-  validator_2:
-    image: $eth2_image_2
+  prysm_validator:
+    image: $prysm_image
     environment:
-      ETH_2_BEACON_URL: 'http://beacon_2:5052'
+      ETH_2_BEACON_URL: 'http://prysm:5052'
       ETH_2_DATADIR: '$ETH_2_DATADIR_2'
-      ETH_KEYSTORE: '$ETH_KEYSTORE'
       ETH_2_MODULE: 'validator'
       ETH_2_NETWORK: '$ETH_2_NETWORK'
       ETH_2_PASSWORD: '/run/secrets/$password_secret'
@@ -190,6 +182,7 @@ services:
       - '$password_secret'
     volumes:
       - '$data/$ETH_2_DATADIR_2:/root/$ETH_2_DATADIR_2'
+      - '$root/$ETH_KEYSTORE:/root/validator_keys'
 
 EOF
 

@@ -38,6 +38,8 @@ then
 
 elif [[ "$ETH_2_MODULE" == "validator" ]]
 then
+  # TODO: Check keystore dir &
+  ls validator_keys
   waitfor "$ETH_2_BEACON_URL"
   echo "Running Lighthouse Validator"
   exec lighthouse --network "$ETH_2_NETWORK" validator \
