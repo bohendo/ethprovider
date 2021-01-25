@@ -18,7 +18,12 @@ Before starting, make sure your lighthouse dir contains a valid `validator_defin
 
 `make stop` will stop both the proxy and provider.
 
-## Configuration
+## TODO
 
-- How many validators?
-- Which clients? (should we auto-use a healthy mixture or depend on user input?)
+- Automate deposit, this probably means wrapping the official deposit CLI in my own script that sends the deposit tx & puts keys in the correct spot
+
+## Open Questions
+
+- How many eth2 beacons should be included? One? One for each distinct validator client? One for each validator?
+- Should end users specify which client they want? Or should we auto-use a healthy mixture of supported clients
+- Is it worth setting up a way for migrating a validator from one client to another? eg from prysm to lighthouse. (maybe later once things standardize a bit more)
