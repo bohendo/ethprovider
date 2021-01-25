@@ -1,0 +1,154 @@
+lighthouse-beacon_node 1.0.6
+Sigma Prime <contact@sigmaprime.io>
+The primary component which connects to the Ethereum 2.0 P2P network and downloads, verifies and stores blocks. Provides
+a HTTP API for querying the beacon chain and publishing messages to the network.
+
+USAGE:
+    lighthouse beacon_node [FLAGS] [OPTIONS]
+
+FLAGS:
+        --compact-db                 If present, apply compaction to the database on start-up. Use with caution. It is
+                                     generally not recommended unless auto-compaction is disabled.
+        --disable-discovery          Disables the discv5 discovery protocol. The node will not search for new peers or
+                                     participate in the discovery protocol.
+        --disable-upnp               Disables UPnP support. Setting this will prevent Lighthouse from attempting to
+                                     automatically establish external port mappings.
+        --dummy-eth1                 If present, uses an eth1 backend that generates static dummy data.Identical to the
+                                     method used at the 2019 Canada interop.
+    -e, --enr-match                  Sets the local ENR IP address and port to match those set for lighthouse.
+                                     Specifically, the IP address will be the value of --listen-address and the UDP port
+                                     will be --discovery-port.
+        --eth1                       If present the node will connect to an eth1 node. This is required for block
+                                     production, you must use this flag if you wish to serve a validator.
+        --eth1-purge-cache           Purges the eth1 block and deposit caches
+    -h, --help                       Prints help information
+        --http                       Enable the RESTful HTTP API server. Disabled by default.
+        --import-all-attestations    Import and aggregate all attestations, regardless of validator subscriptions. This
+                                     will only import attestations from already-subscribed subnets, use with
+                                     --subscribe-all-subnets to ensure all attestations are received for import.
+        --metrics                    Enable the Prometheus metrics HTTP server. Disabled by default.
+        --private                    Prevents sending various client identification information.
+        --purge-db                   If present, the chain database will be deleted. Use with caution.
+        --slasher                    Run a slasher alongside the beacon node. It is currently only recommended for
+                                     expert users because of the immaturity of the slasher UX and the extra resources
+                                     required.
+        --slasher-broadcast          Broadcast slashings found by the slasher to the rest of the network [disabled by
+                                     default].
+        --staking                    Standard option for a staking beacon node. Equivalent to `lighthouse bn --http
+                                     --eth1 `. This will enable the http server on localhost:5052 and try connecting to
+                                     an eth1 node on localhost:8545
+        --subscribe-all-subnets      Subscribe to all subnets regardless of validator count. This will also advertise
+                                     the beacon node as being long-lived subscribed to all subnets.
+    -V, --version                    Prints version information
+    -z, --zero-ports                 Sets all listening TCP/UDP ports to 0, allowing the OS to choose some arbitrary
+                                     free ports.
+
+OPTIONS:
+        --auto-compact-db <auto-compact-db>
+            Enable or disable automatic compaction of the database on finalization. [default: true]
+
+        --block-cache-size <SIZE>
+            Specifies how many blocks the database should cache in memory [default: 5]
+
+        --boot-nodes <ENR/MULTIADDR LIST>
+            One or more comma-delimited base64-encoded ENR's to bootstrap the p2p network. Multiaddr is also supported.
+
+    -d, --datadir <DIR>
+            Used to specify a custom root data directory for lighthouse keys and databases. Defaults to
+            $HOME/.lighthouse/{network} where network is the value of the `network` flag Note: Users should specify
+            separate custom datadirs for different networks.
+        --debug-level <LEVEL>
+            The verbosity level for emitting logs. [default: info]  [possible values: info, debug, trace, warn, error,
+            crit]
+    -x, --disable-enr-auto-update <disable-enr-auto-update>
+            Discovery automatically updates the nodes local ENR with an external IP address and port as seen by other
+            peers on the network. This disables this feature, fixing the ENR's IP/PORT to those specified on boot.
+        --discovery-port <PORT>
+            The UDP port that discovery will listen on. Defaults to `port`
+
+        --enr-address <ADDRESS>
+            The IP address/ DNS address to broadcast to other peers on how to reach this node. If a DNS address is
+            provided, the enr-address is set to the IP address it resolves to and does not auto-update based on PONG
+            responses in discovery. Set this only if you are sure other nodes can connect to your local node on this
+            address. Discovery will automatically find your external address,if possible.
+        --enr-tcp-port <PORT>
+            The TCP port of the local ENR. Set this only if you are sure other nodes can connect to your local node on
+            this port.The --port flag is used if this is not set.
+        --enr-udp-port <PORT>
+            The UDP port of the local ENR. Set this only if you are sure other nodes can connect to your local node on
+            this port.
+        --eth1-blocks-per-log-query <BLOCKS>
+            Specifies the number of blocks that a deposit log query should span. This will reduce the size of responses
+            from the Eth1 endpoint. [default: 1000]
+        --eth1-endpoint <HTTP-ENDPOINT>                        Deprecated. Use --eth1-endpoints.
+        --eth1-endpoints <HTTP-ENDPOINTS>
+            One or more comma-delimited server endpoints for web3 connection. If multiple endpoints are given the
+            endpoints are used as fallback in the given order. Also enables the --eth1 flag. Defaults to
+            http://127.0.0.1:8545.
+        --freezer-dir <DIR>                                    Data directory for the freezer database.
+        --graffiti <GRAFFITI>
+            Specify your custom graffiti to be included in blocks. Defaults to the current version and commit, truncated
+            to fit in 32 bytes. 
+        --http-address <ADDRESS>
+            Set the listen address for the RESTful HTTP API server. [default: 127.0.0.1]
+
+        --http-allow-origin <ORIGIN>
+            Set the value of the Access-Control-Allow-Origin response HTTP header. Use * to allow any origin (not
+            recommended in production). If no value is supplied, the CORS allowed origin is set to the listen address of
+            this server (e.g., http://localhost:5052).
+        --http-port <PORT>
+            Set the listen TCP port for the RESTful HTTP API server. [default: 5052]
+
+        --libp2p-addresses <MULTIADDR>
+            One or more comma-delimited multiaddrs to manually connect to a libp2p peer without an ENR.
+
+        --listen-address <ADDRESS>
+            The address lighthouse will listen for UDP and TCP connections. [default: 0.0.0.0]
+
+        --max-skip-slots <NUM_SLOTS>
+            Refuse to skip more than this many slots when processing a block or attestation. This prevents nodes on
+            minority forks from wasting our time and disk space, but could also cause unnecessary consensus failures, so
+            is disabled by default.
+        --metrics-address <ADDRESS>
+            Set the listen address for the Prometheus metrics HTTP server. [default: 127.0.0.1]
+
+        --metrics-allow-origin <ORIGIN>
+            Set the value of the Access-Control-Allow-Origin response HTTP header. Use * to allow any origin (not
+            recommended in production). If no value is supplied, the CORS allowed origin is set to the listen address of
+            this server (e.g., http://localhost:5054).
+        --metrics-port <PORT>
+            Set the listen TCP port for the Prometheus metrics HTTP server. [default: 5054]
+
+        --network <network>
+            Name of the Eth2 chain Lighthouse will sync and follow. [possible values: medalla, altona, spadina, pyrmont,
+            mainnet, toledo]
+        --network-dir <DIR>
+            Data directory for network keys. Defaults to network/ inside the beacon node dir.
+
+        --port <PORT>
+            The TCP/UDP port to listen on. The UDP port can be modified by the --discovery-port flag. [default: 9000]
+
+        --slasher-chunk-size <EPOCHS>                          Number of epochs per validator per chunk stored on disk.
+        --slasher-dir <PATH>                                   Set the slasher's database directory.
+        --slasher-history-length <EPOCHS>
+            Configure how many epochs of history the slasher keeps. Immutable after initialization.
+
+        --slasher-max-db-size <GIGABYTES>                      Maximum size of the LMDB database used by the slasher.
+        --slasher-update-period <SECONDS>                      Configure how often the slasher runs batch processing.
+        --slasher-validator-chunk-size <NUM_VALIDATORS>        Number of validators per chunk stored on disk.
+        --slots-per-restore-point <SLOT_COUNT>
+            Specifies how often a freezer DB restore point should be stored. Cannot be changed after initialization.
+            [default: 2048 (mainnet) or 64 (minimal)]
+    -s, --spec <DEPRECATED>
+            This flag is deprecated, it will be disallowed in a future release. This value is now derived from the
+            --network or --testnet-dir flags.
+        --target-peers <target-peers>                          The target number of peers. [default: 50]
+    -t, --testnet-dir <DIR>
+            Path to directory containing eth2_testnet specs. Defaults to a hard-coded Lighthouse testnet. Only effective
+            if there is no existing database.
+        --trusted-peers <TRUSTED_PEERS>
+            One or more comma-delimited trusted peer ids which always have the highest score according to the peer
+            scoring system.
+        --wss-checkpoint <WSS_CHECKPOINT>
+            Used to input a Weak Subjectivity State Checkpoint in `block_root:epoch_number` format,where block_root is
+            an '0x' prefixed 32-byte hex string and epoch_number is an integer.

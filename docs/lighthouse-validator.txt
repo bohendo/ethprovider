@@ -1,0 +1,65 @@
+lighthouse-validator_client 
+When connected to a beacon node, performs the duties of a staked validator (e.g., proposing blocks and attestations).
+
+USAGE:
+    lighthouse validator_client [FLAGS] [OPTIONS]
+
+FLAGS:
+        --allow-unsynced              If present, the validator client will still poll for duties if the beacon
+                                                            node is not synced.
+        --delete-lockfiles            DEPRECATED. This flag does nothing and will be removed in a future release.
+        --disable-auto-discover       If present, do not attempt to discover new validators in the validators-dir.
+                                      Validators will need to be manually added to the validator_definitions.yml file.
+    -h, --help                        Prints help information
+        --http                        Enable the RESTful HTTP API server. Disabled by default.
+        --init-slashing-protection    If present, do not require the slashing protection database to exist before
+                                      running. You SHOULD NOT use this flag unless you're certain that a new slashing
+                                      protection database is required. Usually, your database will have been initialized
+                                      when you imported your validator keys. If you misplace your database and then run
+                                      with this flag you risk being slashed.
+        --metrics                     Enable the Prometheus metrics HTTP server. Disabled by default.
+    -V, --version                     Prints version information
+
+OPTIONS:
+        --beacon-node <NETWORK_ADDRESS>       Deprecated. Use --beacon-nodes.
+        --beacon-nodes <NETWORK_ADDRESSES>    Comma-separated addresses to one or more beacon node HTTP APIs. Default is
+                                              http://localhost:5052.
+    -d, --datadir <DIR>                       Used to specify a custom root data directory for lighthouse keys and
+                                              databases. Defaults to $HOME/.lighthouse/{network} where network is the
+                                              value of the `network` flag Note: Users should specify separate custom
+                                              datadirs for different networks.
+        --debug-level <LEVEL>                 The verbosity level for emitting logs. [default: info]  [possible values:
+                                              info, debug, trace, warn, error, crit]
+        --graffiti <GRAFFITI>                 Specify your custom graffiti to be included in blocks.
+        --http-allow-origin <ORIGIN>          Set the value of the Access-Control-Allow-Origin response HTTP header. Use
+                                              * to allow any origin (not recommended in production). If no value is
+                                              supplied, the CORS allowed origin is set to the listen address of this
+                                              server (e.g., http://localhost:5062).
+        --http-port <PORT>                    Set the listen TCP port for the RESTful HTTP API server. This server does
+                                              **not** provide encryption and is completely unsuitable to expose to a
+                                              public network. We do not provide a --http-address flag and restrict the
+                                              user to listening on 127.0.0.1. For access via the Internet, apply a
+                                              transport-layer security like a HTTPS reverse-proxy or SSH tunnelling.
+                                              [default: 5062]
+        --metrics-address <ADDRESS>           Set the listen address for the Prometheus metrics HTTP server. [default:
+                                              127.0.0.1]
+        --metrics-allow-origin <ORIGIN>       Set the value of the Access-Control-Allow-Origin response HTTP header. Use
+                                              * to allow any origin (not recommended in production). If no value is
+                                              supplied, the CORS allowed origin is set to the listen address of this
+                                              server (e.g., http://localhost:5064).
+        --metrics-port <PORT>                 Set the listen TCP port for the Prometheus metrics HTTP server. [default:
+                                              5064]
+        --network <network>                   Name of the Eth2 chain Lighthouse will sync and follow. [possible values:
+                                              medalla, altona, spadina, pyrmont, mainnet, toledo]
+        --secrets-dir <SECRETS_DIRECTORY>     The directory which contains the password to unlock the validator voting
+                                              keypairs. Each password should be contained in a file where the name is
+                                              the 0x-prefixed hex representation of the validators voting public key.
+                                              Defaults to ~/.lighthouse/{network}/secrets.
+        --server <NETWORK_ADDRESS>            Deprecated. Use --beacon-nodes.
+    -s, --spec <DEPRECATED>                   This flag is deprecated, it will be disallowed in a future release. This
+                                              value is now derived from the --network or --testnet-dir flags.
+    -t, --testnet-dir <DIR>                   Path to directory containing eth2_testnet specs. Defaults to a hard-coded
+                                              Lighthouse testnet. Only effective if there is no existing database.
+        --validators-dir <VALIDATORS_DIR>     The directory which contains the validator keystores, deposit data for
+                                              each validator along with the common slashing protection database and the
+                                              validator_definitions.yml
