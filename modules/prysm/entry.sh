@@ -3,6 +3,7 @@
 ETH_2_BEACON_URL="${ETH_2_BEACON_URL:-http://beacon:5052}"
 ETH_2_DATADIR="${ETH_2_DATADIR:-.eth2}"
 ETH_2_ETH1_URL="${ETH_2_ETH1_URL:-http://eth1:8545}"
+ETH_2_INTERNAL_PORT="${ETH_2_INTERNAL_PORT:-5025}"
 ETH_2_MODULE="${ETH_2_MODULE:-beacon}"
 ETH_2_NETWORK="${ETH_2_NETWORK:-pyrmont}"
 ETH_2_PASSWORD="${ETH_2_PASSWORD:-/run/secrets/password}"
@@ -12,6 +13,7 @@ echo "Starting Prysm in env:"
 echo "- ETH_2_BEACON_URL=$ETH_2_BEACON_URL"
 echo "- ETH_2_DATADIR=$ETH_2_DATADIR"
 echo "- ETH_2_ETH1_URL=$ETH_2_ETH1_URL"
+echo "- ETH_2_INTERNAL_PORT=$ETH_2_INTERNAL_PORT"
 echo "- ETH_2_MODULE=$ETH_2_MODULE"
 echo "- ETH_2_NETWORK=$ETH_2_NETWORK"
 echo "- ETH_2_PASSWORD=$ETH_2_PASSWORD"
@@ -32,6 +34,9 @@ then
     "--$ETH_2_NETWORK" \
     --accept-terms-of-use \
     --datadir="$ETH_2_DATADIR" \
+    --grpc-gateway-corsdomain="*" \
+    --grpc-gateway-host="0.0.0.0" \
+    --grpc-gateway-port="$ETH_2_INTERNAL_PORT" \
     --http-web3provider="$ETH_2_ETH1_URL"
 
 elif [[ "$ETH_2_MODULE" == "validator" ]]

@@ -3,14 +3,16 @@
 ETH_2_BEACON_URL="${ETH_2_BEACON_URL:-http://beacon:5052}"
 ETH_2_DATADIR="${ETH_2_DATADIR:-.lighthouse}"
 ETH_2_ETH1_URL="${ETH_2_ETH1_URL:-http://eth1:8545}"
+ETH_2_INTERNAL_PORT="${ETH_2_INTERNAL_PORT:-5025}"
 ETH_2_MODULE="${ETH_2_MODULE:-beacon}"
 ETH_2_NETWORK="${ETH_2_NETWORK:-pyrmont}"
 ETH_2_PASSWORD="${ETH_2_PASSWORD:-/run/secrets/password}"
 
 echo "Starting Lighthouse in env:"
 echo "- ETH_2_BEACON_URL=$ETH_2_BEACON_URL"
-echo "- ETH_2_ETH1_URL=$ETH_2_ETH1_URL"
 echo "- ETH_2_DATADIR=$ETH_2_DATADIR"
+echo "- ETH_2_ETH1_URL=$ETH_2_ETH1_URL"
+echo "- ETH_2_INTERNAL_PORT=$ETH_2_INTERNAL_PORT"
 echo "- ETH_2_MODULE=$ETH_2_MODULE"
 echo "- ETH_2_NETWORK=$ETH_2_NETWORK"
 echo "- ETH_2_PASSWORD=$ETH_2_PASSWORD"
@@ -32,7 +34,7 @@ then
     --http \
     --http-address=0.0.0.0 \
     --http-allow-origin "*" \
-    --http-port=5052
+    --http-port="$ETH_2_INTERNAL_PORT"
 
 elif [[ "$ETH_2_MODULE" == "validator" ]]
 then
