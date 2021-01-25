@@ -38,7 +38,7 @@ clean:
 
 # Begin Real Rules
 
-proxy: $(shell find modules/proxy $(find_options))
+proxy: versions $(shell find modules/proxy $(find_options))
 	$(log_start)
 	docker build --file modules/proxy/Dockerfile --tag $(project)_proxy:$(proxy_version) modules/proxy
 	$(log_finish) && mv -f $(totalTime) .flags/$@
