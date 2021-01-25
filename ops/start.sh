@@ -19,32 +19,36 @@ fi
 # shellcheck disable=SC1091
 if [[ -f ".env" ]]; then source ".env"; fi
 
+ETH_1_CACHE="${ETH_1_CACHE:-2048}"
 ETH_1_CLIENT="${ETH_1_CLIENT:-geth}"
-ETH_1_DATADIR="${ETH_1_DATADIR:-.$ETH_1_CLIENT}"
+ETH_1_DATADIR="${ETH_1_DATADIR:-$ETH_1_CLIENT}"
+ETH_1_NETWORK="${ETH_1_NETWORK:-goerli}"
 ETH_2_CLIENT_1="${ETH_2_CLIENT_1:-prysm}"
 ETH_2_CLIENT_2="${ETH_2_CLIENT_2:-lighthouse}"
-ETH_2_DATADIR_1="${ETH_2_DATADIR_1:-.$ETH_2_CLIENT_1}"
-ETH_2_DATADIR_2="${ETH_2_DATADIR_2:-.$ETH_2_CLIENT_2}"
+ETH_2_DATADIR_1="${ETH_2_DATADIR_1:-$ETH_2_CLIENT_1}"
+ETH_2_DATADIR_2="${ETH_2_DATADIR_2:-$ETH_2_CLIENT_2}"
 ETH_2_ETH1_URL="${ETH_2_ETH1_URL:-http://eth1:8545}"
+ETH_2_NETWORK="${ETH_2_NETWORK:-pyrmont}"
 ETH_API_KEY="${ETH_API_KEY:-abc123}"
 ETH_DATA_ROOT="${ETH_DATA_ROOT:-.data}"
-ETH_KEYSTORE="${ETH_DATA_ROOT:-$ETH_DATA_ROOT/validator_keys}"
 ETH_DOMAINNAME="${ETH_DOMAINNAME:-localhost}"
-ETH_NETWORK="${ETH_NETWORK:-pyrmont}"
+ETH_KEYSTORE="${ETH_DATA_ROOT:-$ETH_DATA_ROOT/validator_keys}"
 
 echo "Starting eth stack in env:"
+echo "- ETH_1_CACHE=$ETH_1_CACHE"
 echo "- ETH_1_CLIENT=$ETH_1_CLIENT"
 echo "- ETH_1_DATADIR=$ETH_1_DATADIR"
+echo "- ETH_1_NETWORK=$ETH_1_NETWORK"
 echo "- ETH_2_CLIENT_1=$ETH_2_CLIENT_1"
 echo "- ETH_2_CLIENT_2=$ETH_2_CLIENT_2"
 echo "- ETH_2_DATADIR_1=$ETH_2_DATADIR_1"
 echo "- ETH_2_DATADIR_2=$ETH_2_DATADIR_2"
 echo "- ETH_2_ETH1_URL=$ETH_2_ETH1_URL"
+echo "- ETH_2_NETWORK=$ETH_2_NETWORK"
 echo "- ETH_API_KEY=$ETH_API_KEY"
 echo "- ETH_DATA_ROOT=$ETH_DATA_ROOT"
-echo "- ETH_KEYSTORE=$ETH_KEYSTORE"
 echo "- ETH_DOMAINNAME=$ETH_DOMAINNAME"
-echo "- ETH_NETWORK=$ETH_NETWORK"
+echo "- ETH_KEYSTORE=$ETH_KEYSTORE"
 
 data="$root/$ETH_DATA_ROOT"
 mkdir -p "$data/$ETH_1_DATADIR" "$data/$ETH_2_DATADIR_1" "$data/$ETH_2_DATADIR_2"
@@ -117,7 +121,11 @@ services:
 
   eth1:
     image: $eth1_image
-    command: --goerli
+    environment:
+      ETH_1_CACHE: '$ETH_1_CACHE'
+      ETH_1_CLIENT: '$ETH_1_CLIENT'
+      ETH_1_DATADIR: '$ETH_1_DATADIR/$ETH_1_NETWORK'
+      ETH_1_NETWORK: '$ETH_1_NETWORK'
     $logging
     ports:
       - '30303:30303'
@@ -130,7 +138,7 @@ services:
       ETH_2_DATADIR: '$ETH_2_DATADIR_1'
       ETH_2_ETH1_URL: '$ETH_2_ETH1_URL'
       ETH_2_MODULE: 'beacon'
-      ETH_2_NETWORK: '$ETH_NETWORK'
+      ETH_2_NETWORK: '$ETH_2_NETWORK'
     $logging
     volumes:
       - '$data/$ETH_2_DATADIR_1:/root/$ETH_2_DATADIR_1'
@@ -142,7 +150,7 @@ services:
       ETH_2_DATADIR: '$ETH_2_DATADIR_1'
       ETH_KEYSTORE: '$ETH_KEYSTORE'
       ETH_2_MODULE: 'validator'
-      ETH_2_NETWORK: '$ETH_NETWORK'
+      ETH_2_NETWORK: '$ETH_2_NETWORK'
       ETH_2_PASSWORD: '/run/secrets/$password_secret'
     $logging
     secrets:
@@ -156,7 +164,7 @@ services:
       ETH_2_DATADIR: '$ETH_2_DATADIR_2'
       ETH_2_ETH1_URL: '$ETH_2_ETH1_URL'
       ETH_2_MODULE: 'beacon'
-      ETH_2_NETWORK: '$ETH_NETWORK'
+      ETH_2_NETWORK: '$ETH_2_NETWORK'
     $logging
     volumes:
       - '$data/$ETH_2_DATADIR_2:/root/$ETH_2_DATADIR_2'
@@ -168,7 +176,7 @@ services:
       ETH_2_DATADIR: '$ETH_2_DATADIR_2'
       ETH_KEYSTORE: '$ETH_KEYSTORE'
       ETH_2_MODULE: 'validator'
-      ETH_2_NETWORK: '$ETH_NETWORK'
+      ETH_2_NETWORK: '$ETH_2_NETWORK'
       ETH_2_PASSWORD: '/run/secrets/$password_secret'
     $logging
     secrets:
