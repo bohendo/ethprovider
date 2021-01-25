@@ -1,4 +1,3 @@
 geth=1.9.25
 lighthouse=1.0.6
-proxy=2.0.0
-prysm=1.1.0
+proxy=2.1.0
