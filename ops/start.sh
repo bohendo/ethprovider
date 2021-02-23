@@ -29,11 +29,9 @@ if [[ -f ".env" ]]; then source ".env"; fi
 ETH_1_CACHE="${ETH_1_CACHE:-2048}"
 ETH_1_DATADIR="${ETH_1_DATADIR:-geth}"
 ETH_1_LIGHT_SERVE="${ETH_1_LIGHT_SERVE:-20}"
-
 ETH_2_DATADIR="${ETH_2_DATADIR:-lighthouse}"
 ETH_2_ETH1_URL="${ETH_2_ETH1_URL:-http://eth1:$eth1_http_port}"
 ETH_2_KEYSTORE="${ETH_2_KEYSTORE:-validator_keys}"
-
 ETH_API_KEY="${ETH_API_KEY:-abc123}"
 ETH_DATA_ROOT="${ETH_DATA_ROOT:-$root/.data}"
 ETH_DOMAINNAME="${ETH_DOMAINNAME:-}"
@@ -41,13 +39,11 @@ ETH_MAINNET="${ETH_MAINNET:-false}"
 
 echo "Starting eth stack in env:"
 echo "- ETH_1_CACHE=$ETH_1_CACHE"
-echo "- ETH_1_LIGHT_SERVE=$ETH_1_LIGHT_SERVE"
 echo "- ETH_1_DATADIR=$ETH_1_DATADIR"
-
+echo "- ETH_1_LIGHT_SERVE=$ETH_1_LIGHT_SERVE"
 echo "- ETH_2_DATADIR=$ETH_2_DATADIR"
 echo "- ETH_2_ETH1_URL=$ETH_2_ETH1_URL"
 echo "- ETH_2_KEYSTORE=$ETH_2_KEYSTORE"
-
 echo "- ETH_API_KEY=$ETH_API_KEY"
 echo "- ETH_DATA_ROOT=$ETH_DATA_ROOT"
 echo "- ETH_DOMAINNAME=$ETH_DOMAINNAME"
@@ -136,10 +132,10 @@ services:
     image: $geth_image
     environment:
       ETH_1_CACHE: '$ETH_1_CACHE'
-      ETH_1_LIGHT_SERVE: '$ETH_1_LIGHT_SERVE'
       ETH_1_DATADIR: '$ETH_1_DATADIR/$eth1_network'
-      ETH_1_NETWORK: '$eth1_network'
       ETH_1_HTTP_PORT: '$eth1_http_port'
+      ETH_1_LIGHT_SERVE: '$ETH_1_LIGHT_SERVE'
+      ETH_1_NETWORK: '$eth1_network'
       ETH_1_WS_PORT: '$eth1_ws_port'
     $logging
     ports:
@@ -152,9 +148,9 @@ services:
     environment:
       ETH_2_DATADIR: '$ETH_2_DATADIR/$eth2_network'
       ETH_2_ETH1_URL: '$ETH_2_ETH1_URL'
+      ETH_2_INTERNAL_PORT: '$beacon_internal_port'
       ETH_2_MODULE: 'beacon'
       ETH_2_NETWORK: '$eth2_network'
-      ETH_2_INTERNAL_PORT: '$beacon_internal_port'
     $logging
     volumes:
       - '$ETH_DATA_ROOT/$ETH_2_DATADIR:/root/$ETH_2_DATADIR'
@@ -164,6 +160,7 @@ services:
     environment:
       ETH_2_BEACON_URL: 'http://beacon:$beacon_internal_port'
       ETH_2_DATADIR: '$ETH_2_DATADIR/$eth2_network'
+      ETH_2_ETH1_URL: '$ETH_2_ETH1_URL'
       ETH_2_KEYSTORE: '$ETH_2_KEYSTORE'
       ETH_2_MODULE: 'validator'
       ETH_2_NETWORK: '$eth2_network'
