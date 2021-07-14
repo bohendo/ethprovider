@@ -1,4 +1,4 @@
-lighthouse-validator_client 
+lighthouse-validator_client
 When connected to a beacon node, performs the duties of a staked validator (e.g., proposing blocks and attestations).
 
 USAGE:
@@ -10,6 +10,9 @@ FLAGS:
         --delete-lockfiles            DEPRECATED. This flag does nothing and will be removed in a future release.
         --disable-auto-discover       If present, do not attempt to discover new validators in the validators-dir.
                                       Validators will need to be manually added to the validator_definitions.yml file.
+        --disable-malloc-tuning       If present, do not configure the system allocator. Providing this flag will
+                                      generally increase memory usage, it should only be provided when debugging
+                                      specific memory allocation issues.
     -h, --help                        Prints help information
         --http                        Enable the RESTful HTTP API server. Disabled by default.
         --init-slashing-protection    If present, do not require the slashing protection database to exist before
@@ -31,6 +34,7 @@ OPTIONS:
         --debug-level <LEVEL>                 The verbosity level for emitting logs. [default: info]  [possible values:
                                               info, debug, trace, warn, error, crit]
         --graffiti <GRAFFITI>                 Specify your custom graffiti to be included in blocks.
+        --graffiti-file <GRAFFITI-FILE>       Specify a graffiti file to load validator graffitis from.
         --http-allow-origin <ORIGIN>          Set the value of the Access-Control-Allow-Origin response HTTP header. Use
                                               * to allow any origin (not recommended in production). If no value is
                                               supplied, the CORS allowed origin is set to the listen address of this
@@ -49,8 +53,15 @@ OPTIONS:
                                               server (e.g., http://localhost:5064).
         --metrics-port <PORT>                 Set the listen TCP port for the Prometheus metrics HTTP server. [default:
                                               5064]
+        --monitoring-endpoint <ADDRESS>       Enables the monitoring service for sending system metrics to a remote
+                                              endpoint. This can be used to monitor your setup on certain services (e.g.
+                                              beaconcha.in). This flag sets the endpoint where the beacon node metrics
+                                              will be sent. Note: This will send information to a remote sever which may
+                                              identify and associate your validators, IP address and other personal
+                                              information. Always use a HTTPS connection and never provide an untrusted
+                                              URL.
         --network <network>                   Name of the Eth2 chain Lighthouse will sync and follow. [possible values:
-                                              medalla, altona, spadina, pyrmont, mainnet, toledo]
+                                              medalla, altona, spadina, pyrmont, mainnet, toledo, prater]
         --secrets-dir <SECRETS_DIRECTORY>     The directory which contains the password to unlock the validator voting
                                               keypairs. Each password should be contained in a file where the name is
                                               the 0x-prefixed hex representation of the validators voting public key.
