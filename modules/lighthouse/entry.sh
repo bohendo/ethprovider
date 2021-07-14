@@ -8,7 +8,7 @@ ETH_2_MODULE="${ETH_2_MODULE:-beacon}"
 ETH_2_NETWORK="${ETH_2_NETWORK:-pyrmont}"
 ETH_2_PASSWORD_FILE="${ETH_2_PASSWORD_FILE:-/run/secrets/password}"
 
-ETH_2_DATADIR="${ETH_2_DATADIR:-lighthouse/$ETH_2_NETWORK}"
+ETH_2_DATADIR="${ETH_2_DATADIR:-/data/lighthouse/$ETH_2_NETWORK}"
 
 echo "Starting Lighthouse in env:"
 echo "- ETH_2_BEACON_URL=$ETH_2_BEACON_URL"
@@ -35,8 +35,8 @@ then
     --datadir="$ETH_2_DATADIR" \
     --eth1-endpoints="$ETH_2_ETH1_URL" \
     --http \
-    --http-address=0.0.0.0 \
-    --http-allow-origin "*" \
+    --http-address="0.0.0.0" \
+    --http-allow-origin="*" \
     --http-port="$ETH_2_INTERNAL_PORT"
 
 elif [[ "$ETH_2_MODULE" == "validator" ]]
@@ -48,15 +48,15 @@ then
     echo "Importing validator accounts from keystore"
     lighthouse --network "$ETH_2_NETWORK" account validator import \
       --datadir="$ETH_2_DATADIR" \
-      --directory "$ETH_2_KEYSTORE" \
-      --reuse-password \
-      --stdin-inputs < "$ETH_2_PASSWORD_FILE"
+      --validator-dir="$ETH_2_KEYSTORE" \
+      --password-file="$ETH_2_PASSWORD_FILE" \
+      --reuse-password
   fi
   waitfor "$ETH_2_BEACON_URL"
   echo "Running Lighthouse Validator"
   exec lighthouse --network "$ETH_2_NETWORK" validator \
     --datadir="$ETH_2_DATADIR" \
-    --beacon-node="$ETH_2_BEACON_URL"
+    --beacon-nodes="$ETH_2_BEACON_URL"
 
 else
   echo "Unknown Lighthouse module: $ETH_2_MODULE"
