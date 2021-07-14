@@ -13,6 +13,7 @@ validator_keys
 .data
 
 ## Temp
+*.logs
 *.swp
 .flags
 *.docker-compose.yml

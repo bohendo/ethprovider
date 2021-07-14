@@ -1,8 +1,7 @@
 #!/bin/bash
 set -e
 
-root="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." >/dev/null 2>&1 && pwd )"
-
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." >/dev/null 2>&1 && pwd)"
 stack="eth"
 
 # make sure a network for this project has been created
@@ -52,7 +51,7 @@ echo "- ETH_MAINNET=$ETH_MAINNET"
 ########################################
 ## Configure internal vars
 
-mkdir -p "$ETH_DATA_ROOT/$ETH_1_DATADIR" "$ETH_DATA_ROOT/$ETH_2_DATADIR"
+mkdir -pv "$ETH_DATA_ROOT/$ETH_1_DATADIR" "$ETH_DATA_ROOT/$ETH_2_DATADIR"
 
 if [[ "$ETH_MAINNET" == "true" ]]
 then
