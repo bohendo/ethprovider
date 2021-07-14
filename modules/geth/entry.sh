@@ -35,7 +35,6 @@ exec geth $network_flag \
   --graphql.vhosts=* \
   --ipcdisable \
   --light.serve="$ETH_1_LIGHT_SERVE" \
-  --nousb \
   --ws \
   --ws.addr=0.0.0.0 \
   --ws.api=eth,net \

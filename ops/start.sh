@@ -91,7 +91,7 @@ fi
 ########################################
 ## Deploy
 
-echo "Deploying images $proxy_image and $geth_image among others"
+echo "Deploying $geth_image and $lighthouse_image"
 
 logging="logging:
       driver: 'json-file'

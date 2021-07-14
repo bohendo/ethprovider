@@ -17,8 +17,8 @@ totalTime=.flags/.totalTime
 log_start=@echo "=============";echo "[Makefile] => Start building $@"; date "+%s" > $(startTime)
 log_finish=@echo $$((`date "+%s"` - `cat $(startTime)`)) > $(totalTime); rm $(startTime); echo "[Makefile] => Finished building $@ in `cat $(totalTime)` seconds";echo "=============";echo
 
-# Begin Phony Rules
-.PHONY: default all stop clean deploy deploy-live proxy-logs provider-logs
+########################################
+# Command & Control Aliases
 
 default: all
 all: proxy geth lighthouse
@@ -33,10 +33,11 @@ stop:
 restart: stop
 	bash ops/start.sh
 
-clean:
+clean: stop
 	rm -rf .flags/*
 
-# Begin Real Rules
+########################################
+# Build Rules
 
 proxy: versions $(shell find modules/proxy $(find_options))
 	$(log_start)
